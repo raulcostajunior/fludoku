@@ -1,8 +1,6 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Generates and solves Sudoku puzzles.
 library;
 
-export 'src/fludoku_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/board.dart' show Board;
+export 'src/generator.dart' show Generator;
+export 'src/solver.dart' show Solver;
