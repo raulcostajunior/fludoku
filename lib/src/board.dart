@@ -62,7 +62,7 @@ class Board {
   /// Returns true if the board is valid (synonym for "has no invalid position").
   bool get isValid => _getInvalidPositions(stopAtFirst: true).isEmpty;
 
-  late List<List<int>> _values;
+  late final List<List<int>> _values;
 
   /// Finds all invalid positions in the Sudoku board.
   ///
