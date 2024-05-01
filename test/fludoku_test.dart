@@ -10,7 +10,7 @@ void main() {
     });
 
     test('First Test', () {
-      expect(board.getAt(0, 0), 0);
+      expect(board.getAt(row: 0, col: 0), 0);
     });
   });
 }
