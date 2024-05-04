@@ -5,6 +5,8 @@ class Board {
   static const dimension = 9;
   static const maxValue = 9;
 
+  //#region Constructors
+
   Board() {
     _values = List.generate(Board.dimension,
         (row) => List.generate(Board.dimension, (col) => 0, growable: false),
@@ -19,6 +21,18 @@ class Board {
             growable: false),
         growable: false);
   }
+
+  //#endregion
+
+  //#region Read-only Properties
+
+  /// Returns true if the board is valid (synonym for "has no invalid position").
+  bool get isValid => _getInvalidPositions(stopAtFirst: true).isEmpty;
+
+  /// Returns true if the board is empty (all its positions have value 0).
+  bool get isEmpty => _values.every((row) => row.every((value) => value == 0));
+
+  //#endregion
 
   /// Returns the [value] at the specified [row] and [column] on the Sudoku board.
   ///
@@ -60,12 +74,6 @@ class Board {
           'Cannot set ($row, $col) to "$value" because it would invalidate the board');
     }
   }
-
-  /// Returns true if the board is valid (synonym for "has no invalid position").
-  bool get isValid => _getInvalidPositions(stopAtFirst: true).isEmpty;
-
-  /// Returns true if the board is empty (all its positions have value 0).
-  bool get isEmpty => _values.every((row) => row.every((value) => value == 0));
 
   late final List<List<int>> _values;
 
