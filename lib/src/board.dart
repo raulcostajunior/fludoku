@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// A Sudoku puzzle Board.
 class Board {
   static const dimension = 9;
@@ -62,11 +64,14 @@ class Board {
   /// Returns true if the board is valid (synonym for "has no invalid position").
   bool get isValid => _getInvalidPositions(stopAtFirst: true).isEmpty;
 
+  /// Returns true if the board is empty (all its positions have value 0).
+  bool get isEmpty => _values.every((row) => row.every((value) => value == 0));
+
   late final List<List<int>> _values;
 
   /// Finds all invalid positions in the Sudoku board.
   ///
-  /// This method checks the board for values that are out of range, as well as
+  /// Checks the board for values that are out of range, as well as
   /// duplicate non-empty values across rows, columns or any of the square
   /// sections of the board. It returns a list of (row, column) tuples
   /// representing the invalid positions.
@@ -119,8 +124,69 @@ class Board {
         }
       }
     }
-    // TODO: Searches for duplicate non-empty values across square sections
+    // Searches for duplicate non-empty values across square sections
+    final sectionSize = sqrt(Board.dimension).toInt();
+    for (var section = 0; section < Board.dimension; section++) {
+      var initialCol = sectionSize * (section % sectionSize);
+      var initialRow = sectionSize * (section ~/ sectionSize);
+      // sectionValues keeps track of the different values in the current section,
+      // storing the column and row of the first value found and whether it is repeated.
+      // For the purposes of this method, there's no need to store the position of the
+      // repetitions of the value in the section.
+      var sectionValues =
+          List<({int value, int rowFirst, int colFirst, bool repeated})>.empty(
+              growable: true);
+      for (var row = initialRow; row < initialRow + sectionSize; row++) {
+        for (var col = initialCol; col < initialCol + sectionSize; col++) {
+          var value = _values[row][col];
+          if (value != 0 && value <= Board.maxValue) {
+            // Value is not blank, check if it is repeated in the section.
+            bool isFirstInSection = true;
+            for (var sectionValue in sectionValues) {
+              if (sectionValue.value == value) {
+                isFirstInSection = false;
+                // Value is repeated in the section.
+                sectionValue = (
+                  value: sectionValue.value,
+                  rowFirst: sectionValue.rowFirst,
+                  colFirst: sectionValue.colFirst,
+                  repeated: true,
+                );
+                invalidPositions.add((row, col));
+                if (stopAtFirst) {
+                  return invalidPositions;
+                }
+              }
+            }
+            if (isFirstInSection) {
+              // Registers the first occurence of the value in the section.
+              sectionValues.add((
+                value: value,
+                rowFirst: row,
+                colFirst: col,
+                repeated: false,
+              ));
+            }
+          }
+        }
+      }
+      // Registers the first occurrences of repeated values in the section - the first occurrences
+      // of repeated values are also considered invalid positions. The positions of the repetitions
+      // have already been registered at the moment the repetition has been found.
+      for (var sectionValue in sectionValues) {
+        if (sectionValue.repeated) {
+          invalidPositions.add((sectionValue.rowFirst, sectionValue.colFirst));
+          // A first occurrence of a repeated value cannot be the first error found - the
+          // repetition itself would have been the first error. If the stopAtFirst
+          // method argument is true this point would never have been reached, so there's
+          // no need to check for stopAtFirst and return immediately.
+        }
+      }
+    }
 
-    return invalidPositions;
-  }
-}
+    // Eliminates duplicates in the list of invalid positions.
+    var invalidPositionsSet = Set.from(invalidPositions);
+
+    return List.from(invalidPositionsSet);
+  } // _getInvalidPositions
+} // class Board

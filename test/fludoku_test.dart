@@ -2,15 +2,14 @@ import 'package:fludoku/fludoku.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('A group of tests', () {
-    final board = Board();
-
+  group('Board Tests', () {
     setUp(() {
       // Additional setup goes here.
     });
 
-    test('First Test', () {
-      expect(board.getAt(row: 0, col: 0), 0);
+    test('Board initially empty', () {
+      var board = Board();
+      expect(board.isEmpty, true);
     });
   });
 }
