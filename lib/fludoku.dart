@@ -1,6 +1,6 @@
 /// Generates and solves Sudoku puzzles.
 library;
 
-export 'src/board.dart' show Board;
-export 'src/generator.dart' show Generator;
-export 'src/solver.dart' show Solver;
+export 'board.dart' show Board;
+export 'generator.dart' show Generator;
+export 'solver.dart' show Solver;
