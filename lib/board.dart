@@ -3,7 +3,8 @@ import 'dart:math';
 /// A Sudoku puzzle Board.
 class Board {
   static const dimension = 9;
-  static const maxValue = 9;
+  static final groupSize = sqrt(dimension).toInt();
+  static const maxValue = dimension;
 
   //#region Constructors
 
@@ -65,9 +66,10 @@ class Board {
           'value must be between 0 and ${Board.maxValue}. 0 is the blank value');
     }
     var boardWithValue = Board.clone(this);
+    boardWithValue._values[row][col] = value;
     if (boardWithValue.isValid) {
       // The addition of the value doesn't invalidate the board.
-      boardWithValue._values[row][col] = value;
+      _values[row][col] = value;
     } else {
       // The addition of the value invalidates the board.
       throw ArgumentError(
@@ -197,4 +199,20 @@ class Board {
 
     return List.from(invalidPositionsSet);
   } // _getInvalidPositions
+
+  @override
+  String toString() {
+    var strBuff = StringBuffer("\n");
+    for (var lin = 0; lin < Board.dimension; lin++) {
+      for (var col = 0; col < Board.dimension; col++) {
+        var value = _values[lin][col] > 0 ? _values[lin][col] : '_';
+        strBuff.write("$value ");
+        if ((col+1) % Board.groupSize == 0) strBuff.write(" ");
+      }
+      strBuff.write("\n");
+      if ((lin + 1) % Board.groupSize == 0 && (lin+1) < Board.dimension) strBuff.write("\n");
+    }
+    return strBuff.toString();
+  }
+
 } // class Board
