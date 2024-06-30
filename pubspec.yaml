@@ -1,7 +1,7 @@
 name: fludoku
-description: A starting point for Dart libraries or applications.
+description: A library for generating and solving Sudoku boards.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/raulcostajunior/fludoku
 
 environment:
   sdk: ^3.3.3
