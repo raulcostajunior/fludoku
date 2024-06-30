@@ -23,6 +23,14 @@ class Board {
         growable: false);
   }
 
+  Board.from(List<List<int>> values) {
+    _values = List.generate(
+        Board.dimension,
+        (row) => List.generate(Board.dimension, (col) => values[row][col],
+            growable: false),
+        growable: false);
+  }
+
   //#endregion
 
   //#region Read-only Properties
@@ -32,6 +40,15 @@ class Board {
 
   /// Returns true if the board is empty (all its positions have value 0).
   bool get isEmpty => _values.every((row) => row.every((value) => value == 0));
+
+  /// Returns the number of blank board positions (positions with value 0).
+  int get blankPositionsCount => _values.fold(
+      0,
+      (sum, row) =>
+          sum + row.fold(0, (sum, value) => sum + (value == 0 ? 1 : 0)));
+
+  /// Returns true if the Sudoku board is complete (valid without any blank position)
+  bool get isComplete => blankPositionsCount == 0 && isValid;
 
   //#endregion
 
@@ -135,10 +152,9 @@ class Board {
       }
     }
     // Searches for duplicate non-empty values across square sections
-    final sectionSize = sqrt(Board.dimension).toInt();
     for (var section = 0; section < Board.dimension; section++) {
-      var initialCol = sectionSize * (section % sectionSize);
-      var initialRow = sectionSize * (section ~/ sectionSize);
+      var initialCol = Board.groupSize * (section % Board.groupSize);
+      var initialRow = Board.groupSize * (section ~/ Board.groupSize);
       // sectionValues keeps track of the different values in the current section,
       // storing the column and row of the first value found and whether it is repeated.
       // For the purposes of this method, there's no need to store the position of the
@@ -146,8 +162,8 @@ class Board {
       var sectionValues =
           List<({int value, int rowFirst, int colFirst, bool repeated})>.empty(
               growable: true);
-      for (var row = initialRow; row < initialRow + sectionSize; row++) {
-        for (var col = initialCol; col < initialCol + sectionSize; col++) {
+      for (var row = initialRow; row < initialRow + Board.groupSize; row++) {
+        for (var col = initialCol; col < initialCol + Board.groupSize; col++) {
           var value = _values[row][col];
           if (value != 0 && value <= Board.maxValue) {
             // Value is not blank, check if it is repeated in the section.
@@ -207,12 +223,15 @@ class Board {
       for (var col = 0; col < Board.dimension; col++) {
         var value = _values[lin][col] > 0 ? _values[lin][col] : '_';
         strBuff.write("$value ");
-        if ((col+1) % Board.groupSize == 0) strBuff.write(" ");
+        if ((col + 1) % Board.groupSize == 0) {
+          strBuff.write(" ");
+        }
       }
       strBuff.write("\n");
-      if ((lin + 1) % Board.groupSize == 0 && (lin+1) < Board.dimension) strBuff.write("\n");
+      if ((lin + 1) % Board.groupSize == 0 && (lin + 1) < Board.dimension) {
+        strBuff.write("\n");
+      }
     }
     return strBuff.toString();
   }
-
 } // class Board
