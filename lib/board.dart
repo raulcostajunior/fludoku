@@ -90,7 +90,7 @@ class Board {
     } else {
       // The addition of the value invalidates the board.
       throw ArgumentError(
-          'Cannot set ($row, $col) to "$value" because it would invalidate the board');
+          'Cannot set ($row, $col) to "$value" as it would invalidate the board');
     }
   }
 
@@ -185,7 +185,7 @@ class Board {
               }
             }
             if (isFirstInSection) {
-              // Registers the first occurence of the value in the section.
+              // Registers the first occurrence of the value in the section.
               sectionValues.add((
                 value: value,
                 rowFirst: row,
