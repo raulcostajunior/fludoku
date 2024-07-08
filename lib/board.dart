@@ -47,6 +47,25 @@ class Board {
       (sum, row) =>
           sum + row.fold(0, (sum, value) => sum + (value == 0 ? 1 : 0)));
 
+  /// Returns a list with the blank positions of the board (positions with
+  /// value 0). The list is a list of (row, column) tuples.
+  List<(int, int)> get blankPositions {
+    var blanks = <(int, int)>[];
+    for (var row = 0; row < Board.dimension; row++) {
+      for (var col = 0; col < Board.dimension; col++) {
+        if (_values[row][col] == 0) {
+          blanks.add((row, col));
+        }
+      }
+    }
+    return blanks;
+  }
+
+  /// Returns a list with the invalid positions of the board. The list is a
+  /// list of (row, column) tuples.
+  List<(int, int)> get invalidPositions => _getInvalidPositions();
+
+  
   /// Returns true if the Sudoku board is complete (valid without any blank position)
   bool get isComplete => blankPositionsCount == 0 && isValid;
 
@@ -100,7 +119,7 @@ class Board {
   ///
   /// Checks the board for values that are out of range, as well as
   /// duplicate non-empty values across rows, columns or any of the square
-  /// sections of the board. It returns a list of (row, column) tuples
+  /// sections of the board. It returns a list of (row, column) records
   /// representing the invalid positions.
   ///
   /// If [stopAtFirst] is true, the method will return as soon as the first

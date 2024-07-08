@@ -24,6 +24,7 @@ void main() {
       expect(board.isEmpty, true);
       expect(board.blankPositionsCount, 81);
       expect(board.isValid, true);
+      expect(board.isComplete, false);
     });
 
     test("Invalid board isn't complete", () {
@@ -38,5 +39,14 @@ void main() {
       expect(boardWithBlank.isValid, true);
       expect(boardWithBlank.isComplete, false);
     });
+
+    test("Board with value out of range is invalid", () {
+      expect(invalidBoardValueRange.isValid, false);
+      // There's only one of out-of-range value in the board at position (0,1)
+      var invalids = invalidBoardValueRange.invalidPositions;
+      expect(invalids.length, 1);
+      expect(invalids[0], (0, 1));
+    });
+
   });
 }
