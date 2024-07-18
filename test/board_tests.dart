@@ -27,6 +27,12 @@ void main() {
       expect(board.isComplete, false);
     });
 
+    test("Board is empty after clear", () {
+      var invalidBoardCopy = Board.clone(invalidBoardValueRange);
+      invalidBoardCopy.clear();
+      expect(invalidBoardCopy.isEmpty, true);
+    });
+
     test("Invalid board isn't complete", () {
       expect(invalidBoardValueRange.isComplete, false);
     });

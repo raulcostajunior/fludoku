@@ -65,9 +65,35 @@ class Board {
   /// list of (row, column) tuples.
   List<(int, int)> get invalidPositions => _getInvalidPositions();
 
-  
   /// Returns true if the Sudoku board is complete (valid without any blank position)
   bool get isComplete => blankPositionsCount == 0 && isValid;
+
+  //#endregion
+
+  //#region Identity && Equality
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Board) {
+      return false;
+    }
+    var allEqual = true;
+    for (final (rowIdx, row) in _values.indexed) {
+      for (final (colIdx, posValue) in row.indexed) {
+        if (posValue != other._values[rowIdx][colIdx]) {
+          allEqual = false;
+          break;
+        }
+      }
+    }
+    return allEqual;
+  }
+
+  @override
+  int get hashCode => Object.hashAll(_values);
 
   //#endregion
 
@@ -75,14 +101,8 @@ class Board {
   ///
   /// If the row or column is out of range, a [RangeError] is thrown.
   int getAt({required int row, required int col}) {
-    if (row >= 0 &&
-        row < Board.dimension &&
-        col >= 0 &&
-        col < Board.dimension) {
-      return _values[row][col];
-    }
-    throw RangeError(
-        'row and col must be between 0 and ${Board.dimension - 1}');
+    _checkRowCol(row, col);
+    return _values[row][col];
   }
 
   /// Sets the value at the specified row and column on the Sudoku board.
@@ -91,12 +111,7 @@ class Board {
   /// If the value is out of range, a [RangeError] is thrown.
   /// If setting the [value] would invalidate the board, an [ArgumentError] is thrown.
   void setAt({required int row, required int col, required int value}) {
-    if (row < 0 || row >= Board.dimension) {
-      throw RangeError('row must be between 0 and ${Board.dimension - 1}');
-    }
-    if (col < 0 || col >= Board.dimension) {
-      throw RangeError('col must be between 0 and ${Board.dimension - 1}');
-    }
+    _checkRowCol(row, col);
     if (value < 0 || value >= Board.maxValue) {
       throw RangeError(
           'value must be between 0 and ${Board.maxValue}. 0 is the blank value');
@@ -113,7 +128,48 @@ class Board {
     }
   }
 
+  /// Returns the set of possible values that can be placed at the specified
+  /// position of the Board.
+  /// If the [row] or [column] is out of range, a [RangeError] is thrown.
+  Set<int> possibleValuesAt({required int row, required int col}) {
+    _checkRowCol(row, col);
+    var possibleValues =
+        Set<int>.from(List.generate(Board.maxValue, (i) => i + 1));
+    // Removes all values already in the same row and column.
+    for (var i = 0; i < Board.dimension; i++) {
+      possibleValues.remove(_values[row][i]);
+      possibleValues.remove(_values[i][col]);
+    }
+    // Removes all values already in the same board section
+    var rowStart = (row / Board.groupSize).floor() * Board.groupSize;
+    var colStart = (col / Board.groupSize).floor() * Board.groupSize;
+    for (var i = rowStart; i < rowStart + Board.groupSize; i++) {
+      for (var j = colStart; j < colStart + Board.groupSize; j++) {
+        possibleValues.remove(_values[i][j]);
+      }
+    }
+    return possibleValues;
+  }
+
+  /// Clears the board.
+  void clear() {
+    for (var row = 0; row < Board.dimension; row++) {
+      for (var col = 0; col < Board.dimension; col++) {
+        _values[row][col] = 0;
+      }
+    }
+  }
+
   late final List<List<int>> _values;
+
+  void _checkRowCol(int row, int col) {
+    if (row < 0 || row >= Board.dimension) {
+      throw RangeError('row must be between 0 and ${Board.dimension - 1}');
+    }
+    if (col < 0 || col >= Board.dimension) {
+      throw RangeError('col must be between 0 and ${Board.dimension - 1}');
+    }
+  }
 
   /// Finds all invalid positions in the Sudoku board.
   ///
