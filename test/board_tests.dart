@@ -158,14 +158,14 @@ void main() {
 
     test("Set value with out-of-range value is rejected", () {
       var board = Board.clone(boardWithBlanks);
-      expect(() => board.setAt(row: 0, col: 0, value:12), throwsA(TypeMatcher<RangeError>()));
+      expect(() => board.setAt(row: 0, col: 0, value:12), throwsA(isA<RangeError>()));
       expect(board == boardWithBlanks, true);
     });
 
     test("Set value that makes board invalid is rejected", () {
       var board = Board.clone(boardWithBlanks);
       // 6 is already on the line.
-      expect(() => board.setAt(row:0, col:4, value:6), throwsA(TypeMatcher<ArgumentError>()));
+      expect(() => board.setAt(row:0, col:4, value:6), throwsA(isA<ArgumentError>()));
     });
 
     test("Properly set value is accepted", () {
