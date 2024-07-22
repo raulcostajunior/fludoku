@@ -41,20 +41,14 @@ class Board {
   /// Returns true if the board is empty (all its positions have value 0).
   bool get isEmpty => _values.every((row) => row.every((value) => value == 0));
 
-  /// Returns the number of blank board positions (positions with value 0).
-  int get blankPositionsCount => _values.fold(
-      0,
-      (sum, row) =>
-          sum + row.fold(0, (sum, value) => sum + (value == 0 ? 1 : 0)));
-
   /// Returns a list with the blank positions of the board (positions with
   /// value 0). The list is a list of (row, column) tuples.
-  List<(int, int)> get blankPositions {
-    var blanks = <(int, int)>[];
+  List<({int row, int col})> get blankPositions {
+    var blanks = <({int row, int col})>[];
     for (var row = 0; row < Board.dimension; row++) {
       for (var col = 0; col < Board.dimension; col++) {
         if (_values[row][col] == 0) {
-          blanks.add((row, col));
+          blanks.add((row:row, col:col));
         }
       }
     }
@@ -66,7 +60,7 @@ class Board {
   List<({int row, int col})> get invalidPositions => _getInvalidPositions();
 
   /// Returns true if the Sudoku board is complete (valid without any blank position)
-  bool get isComplete => blankPositionsCount == 0 && isValid;
+  bool get isComplete => blankPositions.isEmpty && isValid;
 
   //#endregion
 

@@ -70,7 +70,7 @@ void main() {
     test("Board is initially empty", () {
       var board = Board();
       expect(board.isEmpty, true);
-      expect(board.blankPositionsCount, 81);
+      expect(board.blankPositions.length, 81);
       expect(board.isValid, true);
       expect(board.isComplete, false);
     });
@@ -89,7 +89,7 @@ void main() {
       var boardWithBlank = Board.clone(invalidBoardValueRange);
       // Turn invalidBoardValueRange into a valid Board with a blank position
       boardWithBlank.setAt(row: 0, col: 1, value: 0);
-      expect(boardWithBlank.blankPositionsCount, 1);
+      expect(boardWithBlank.blankPositions.length, 1);
       expect(boardWithBlank.isValid, true);
       expect(boardWithBlank.isComplete, false);
     });
