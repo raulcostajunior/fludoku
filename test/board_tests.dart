@@ -99,7 +99,7 @@ void main() {
       // There's only one of out-of-range value in the board at position (0,1)
       var invalids = invalidBoardValueRange.invalidPositions;
       expect(invalids.length, 1);
-      expect(invalids[0], (row:0, col:1));
+      expect(invalids[0], (row: 0, col: 1));
     });
 
     test("Board with repeated value in line or column is invalid", () {
@@ -158,20 +158,22 @@ void main() {
 
     test("Set value with out-of-range value is rejected", () {
       var board = Board.clone(boardWithBlanks);
-      expect(() => board.setAt(row: 0, col: 0, value:12), throwsA(isA<RangeError>()));
+      expect(() => board.setAt(row: 0, col: 0, value: 12),
+          throwsA(isA<RangeError>()));
       expect(board == boardWithBlanks, true);
     });
 
     test("Set value that makes board invalid is rejected", () {
       var board = Board.clone(boardWithBlanks);
       // 6 is already on the line.
-      expect(() => board.setAt(row:0, col:4, value:6), throwsA(isA<ArgumentError>()));
+      expect(() => board.setAt(row: 0, col: 4, value: 6),
+          throwsA(isA<ArgumentError>()));
     });
 
     test("Properly set value is accepted", () {
       var board = Board.clone(boardWithBlanks);
       // 6 is already on the line.
-      board.setAt(row:0, col:4, value:4);
+      board.setAt(row: 0, col: 4, value: 4);
       expect(board.getAt(row: 0, col: 4), 4);
     });
 
@@ -189,10 +191,12 @@ void main() {
       expect(possibleValues.length, 0);
     });
 
-    test("Possible values exclude values already in the same line, column or section", () {
+    test(
+        "Possible values exclude values already in the same line, column or section",
+        () {
       final board = Board();
       board.setAt(row: 0, col: 0, value: 1);
-      board.setAt(row:1, col: 1, value: 6);
+      board.setAt(row: 1, col: 1, value: 6);
       board.setAt(row: 8, col: 1, value: 4);
       final possibleValues = board.possibleValuesAt(row: 0, col: 1);
       expect(possibleValues.length, 6);
@@ -200,6 +204,5 @@ void main() {
       expect(possibleValues.contains(6), false);
       expect(possibleValues.contains(4), false);
     });
-
   });
 }
