@@ -62,8 +62,8 @@ class Board {
   }
 
   /// Returns a list with the invalid positions of the board. The list is a
-  /// list of (row, column) tuples.
-  List<(int, int)> get invalidPositions => _getInvalidPositions();
+  /// list of (row, col) records.
+  List<({int row, int col})> get invalidPositions => _getInvalidPositions();
 
   /// Returns true if the Sudoku board is complete (valid without any blank position)
   bool get isComplete => blankPositionsCount == 0 && isValid;
@@ -180,14 +180,14 @@ class Board {
   ///
   /// If [stopAtFirst] is true, the method will return as soon as the first
   /// invalid position is found.
-  List<(int, int)> _getInvalidPositions({bool stopAtFirst = false}) {
-    var invalidPositions = <(int, int)>[];
+  List<({int row, int col})> _getInvalidPositions({bool stopAtFirst = false}) {
+    var invalidPositions = <({int row, int col})>[];
 
     // Searches for out of range values
     for (var row = 0; row < Board.dimension; row++) {
       for (var col = 0; col < Board.dimension; col++) {
         if (_values[row][col] < 0 || _values[row][col] > Board.maxValue) {
-          invalidPositions.add((row, col));
+          invalidPositions.add((row:row, col:col));
           if (stopAtFirst) {
             return invalidPositions;
           }
@@ -201,10 +201,13 @@ class Board {
         if (currentValue != 0 && currentValue <= Board.maxValue) {
           for (var col2 = col + 1; col2 < Board.dimension; col2++) {
             if (_values[row][col2] == currentValue) {
-              invalidPositions.add((row, col));
+              invalidPositions.add((row:row, col:col));
               if (stopAtFirst) {
                 return invalidPositions;
               }
+              // Also adds the position of the repeated item to the list
+              // of invalid positions
+              invalidPositions.add((row: row, col: col2));
             }
           }
         }
@@ -217,10 +220,13 @@ class Board {
         if (currentValue != 0 && currentValue <= Board.maxValue) {
           for (var row2 = row + 1; row2 < Board.dimension; row2++) {
             if (_values[row2][col] == currentValue) {
-              invalidPositions.add((row, col));
+              invalidPositions.add((row:row, col:col));
               if (stopAtFirst) {
                 return invalidPositions;
               }
+              // Also adds the position of the repeated item to the list
+              // of invalids
+              invalidPositions.add((row:row2, col:col));
             }
           }
         }
@@ -253,7 +259,7 @@ class Board {
                   colFirst: sectionValue.colFirst,
                   repeated: true,
                 );
-                invalidPositions.add((row, col));
+                invalidPositions.add((row:row, col:col));
                 if (stopAtFirst) {
                   return invalidPositions;
                 }
@@ -276,7 +282,7 @@ class Board {
       // have already been registered at the moment the repetition has been found.
       for (var sectionValue in sectionValues) {
         if (sectionValue.repeated) {
-          invalidPositions.add((sectionValue.rowFirst, sectionValue.colFirst));
+          invalidPositions.add((row:sectionValue.rowFirst, col:sectionValue.colFirst));
           // A first occurrence of a repeated value cannot be the first error found - the
           // repetition itself would have been the first error. If the stopAtFirst
           // method argument is true this point would never have been reached, so there's
