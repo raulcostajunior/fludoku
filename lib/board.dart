@@ -14,7 +14,7 @@ class Board {
         growable: false);
   }
 
-  Board.clone(Board other) {
+  Board.clone(final Board other) {
     _values = List.generate(
         Board.dimension,
         (row) => List.generate(
@@ -23,7 +23,7 @@ class Board {
         growable: false);
   }
 
-  Board.from(List<List<int>> values) {
+  Board.from(final List<List<int>> values) {
     _values = List.generate(
         Board.dimension,
         (row) => List.generate(Board.dimension, (col) => values[row][col],
@@ -63,7 +63,7 @@ class Board {
 
   //#endregion
 
-  //#region Identity && Equality
+  //#region Identity and Equality
 
   @override
   bool operator ==(Object other) {
