@@ -12,8 +12,8 @@ class Solver {
   /// have only one solution, a [maxSolutions] maximum number of solutions to be
   /// found can be specified.
   ///
-  /// If [puzzle] is not a solvable board, an [ArgumentError] is thrown with
-  /// reason details. If
+  /// If [puzzle] is not a solvable board, an [ArgumentError] is thrown. If
+  /// [maxSolutions] is less than 1, an [ArgumentError] is thrown.
   static List<Board> findSolutions(
       final Board puzzle, final FindSolutionsProgress? progressCallback,
       [final int maxSolutions = 1]) {
