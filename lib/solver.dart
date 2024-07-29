@@ -1,8 +1,8 @@
 import 'board.dart' show Board;
 
 /// Callback type for Solver to report its progress searching for solutions.
-typedef FindSolutionsProgress = void Function(
-    {int progress, int unsolvablesFound});
+/// [progress] is expected to be an integer between 0 and 100.
+typedef FindSolutionsProgress = void Function({int progress});
 
 class Solver {
   /// Finds solution(s) for a given [puzzle] board.
@@ -25,7 +25,7 @@ class Solver {
 
     var solutions = <Board>[];
     _findSolutions(puzzle, progressCallback, maxSolutions, solutions,
-        (level: 0, unsolvablesFound: 0, progress: 0));
+        (level: 0, progress: 0, initialBlanks: puzzle.blankPositions.length));
 
     return solutions;
   }
@@ -35,7 +35,85 @@ class Solver {
       final FindSolutionsProgress? progressCallback,
       final int maxSolutions,
       List<Board> solutions,
-      _FindSolutionsContext context) {}
+      _FindSolutionsContext context) {
+    var blanks = board.blankPositions;
+    if (blanks.isEmpty) {
+      // The board is complete, needs no "solving".
+      solutions.add(board);
+      return;
+    }
+    if (solutions.length >= maxSolutions) {
+      // The maximum number of solutions has been found.
+      if (context.level == 0) {
+        if (progressCallback != null) {
+          progressCallback(progress: 100);
+        }
+      }
+      return;
+    }
+    var possibleValues = <Set<int>>[];
+    for (var blank in blanks) {
+      possibleValues
+          .add(board.possibleValuesAt(row: blank.row, col: blank.col));
+    }
+    // Selects the blank position with the minimum number of possible values to
+    // be the next to be filled.
+    var minSize = Board.maxValue + 1;
+    var possValsIdx = -1;
+    for (final (blankIdx, possVals) in possibleValues.indexed) {
+      if (possVals.isNotEmpty && possVals.length < minSize) {
+        possValsIdx = blankIdx;
+        minSize = possVals.length;
+      } else if (possVals.isEmpty) {
+        // A blank position with no possible value has been found; the board is
+        // not solvable. We just need to backtrack.
+        return;
+      }
+    }
+    // Continues the search across the boards with the next position to be
+    // filled with all the possible values, one for each of the possible values
+    for (final (idx, possVals)
+        in List.from(possibleValues[possValsIdx]).indexed) {
+      var nextBoard = Board.clone(board);
+      nextBoard.setAt(
+          row: blanks[possValsIdx].row,
+          col: blanks[possValsIdx].col,
+          value: possVals[idx]);
+      var newProgress = context.progress;
+      if (progressCallback != null) {
+        // Use the number of remaining blank positions as a rough progress
+        // indicator; must also guarantee that the progress is monotonically
+        // ascending.
+        var currProgress = ((blanks.length - context.initialBlanks) /
+                context.initialBlanks *
+                100)
+            .toInt();
+        if (currProgress > context.progress) {
+          newProgress = currProgress;
+        }
+        progressCallback(progress: newProgress);
+      }
+      _findSolutions(nextBoard, progressCallback, maxSolutions, solutions, (
+        level: context.level + 1,
+        progress: newProgress,
+        initialBlanks: context.initialBlanks
+      ));
+    }
+    if (context.level == 0) {
+      // Reaching this point at level 0 means we are done: all the solutions
+      // space has been searched and all the possible solutions have been
+      // gathered.
+      if (solutions.isEmpty) {
+        // The board is not solvable
+        throw ArgumentError("Board is not solvable");
+      }
+      // Or all the solutions have been found and they are not in a number
+      // greater than maxSolutions.
+      if (progressCallback != null) {
+        progressCallback(progress: 100);
+      }
+    }
+  }
 
   static void _checkSolvable(final Board board) {
     if (!board.isValid) {
@@ -50,8 +128,4 @@ class Solver {
   }
 }
 
-typedef _FindSolutionsContext = ({
-  int level,
-  int unsolvablesFound,
-  int progress
-});
+typedef _FindSolutionsContext = ({int level, int progress, int initialBlanks});
