@@ -43,7 +43,7 @@ class Solver {
       _FindSolutionsContext context) {
     if (solutions.length >= maxSolutions) {
       // The maximum number of solutions has been found. No need to search
-      // further
+      // further.
       return;
     }
     var blanks = board.blankPositions;
@@ -79,7 +79,8 @@ class Solver {
       if (progressCallback != null) {
         // Use the number of remaining blank positions as a rough progress
         // indicator; must also guarantee that the progress is monotonically
-        // ascending.
+        // ascending. This will be a good progress indicator only for "canonical"
+        // Boards with a single solution.
         var currProgress = ((blanks.length - context.initialBlanks) /
                 context.initialBlanks *
                 100)
