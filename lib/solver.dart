@@ -35,7 +35,7 @@ class Solver {
       final FindSolutionsProgress? progressCallback,
       final int maxSolutions,
       List<Board> solutions,
-      ({int level, int unsolvablesFound, int progress}) searchContext) {}
+      _FindSolutionsContext context) {}
 
   static void _checkSolvable(final Board board) {
     if (!board.isValid) {
@@ -49,3 +49,9 @@ class Solver {
     }
   }
 }
+
+typedef _FindSolutionsContext = ({
+  int level,
+  int unsolvablesFound,
+  int progress
+});
