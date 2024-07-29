@@ -23,6 +23,11 @@ class Solver {
     }
     _checkSolvable(puzzle);
 
+    // Initialize progress reporting
+    if (progressCallback != null) {
+      progressCallback(progress: 0);
+    }
+
     var solutions = <Board>[];
     _findSolutions(puzzle, progressCallback, maxSolutions, solutions,
         (level: 0, progress: 0, initialBlanks: puzzle.blankPositions.length));
@@ -36,21 +41,12 @@ class Solver {
       final int maxSolutions,
       List<Board> solutions,
       _FindSolutionsContext context) {
-    var blanks = board.blankPositions;
-    if (blanks.isEmpty) {
-      // The board is complete, needs no "solving".
-      solutions.add(board);
-      return;
-    }
     if (solutions.length >= maxSolutions) {
-      // The maximum number of solutions has been found.
-      if (context.level == 0) {
-        if (progressCallback != null) {
-          progressCallback(progress: 100);
-        }
-      }
+      // The maximum number of solutions has been found. No need to search
+      // further
       return;
     }
+    var blanks = board.blankPositions;
     var possibleValues = <Set<int>>[];
     for (var blank in blanks) {
       possibleValues
@@ -90,8 +86,8 @@ class Solver {
             .toInt();
         if (currProgress > context.progress) {
           newProgress = currProgress;
+          progressCallback(progress: newProgress);
         }
-        progressCallback(progress: newProgress);
       }
       _findSolutions(nextBoard, progressCallback, maxSolutions, solutions, (
         level: context.level + 1,
