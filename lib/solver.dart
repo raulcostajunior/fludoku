@@ -54,6 +54,7 @@ class Solver {
     }
     // Selects the blank position with the minimum number of possible values to
     // be the next to be filled.
+    var boardUnsolvable = false;
     var minSize = Board.maxValue + 1;
     var possValsIdx = -1;
     for (final (blankIdx, possVals) in possibleValues.indexed) {
@@ -62,39 +63,41 @@ class Solver {
         minSize = possVals.length;
       } else if (possVals.isEmpty) {
         // A blank position with no possible value has been found; the board is
-        // not solvable. We just need to backtrack.
-        return;
+        // not solvable.
+        boardUnsolvable = true;
       }
     }
-    // Continues the search across the boards with the next position to be
-    // filled with all the possible values, one for each of the possible values
-    for (final (idx, possVals)
-        in List.from(possibleValues[possValsIdx]).indexed) {
-      var nextBoard = Board.clone(board);
-      nextBoard.setAt(
-          row: blanks[possValsIdx].row,
-          col: blanks[possValsIdx].col,
-          value: possVals[idx]);
-      var newProgress = context.progress;
-      if (progressCallback != null) {
-        // Use the number of remaining blank positions as a rough progress
-        // indicator; must also guarantee that the progress is monotonically
-        // ascending. This will be a good progress indicator only for "canonical"
-        // Boards with a single solution.
-        var currProgress = ((blanks.length - context.initialBlanks) /
-                context.initialBlanks *
-                100)
-            .toInt();
-        if (currProgress > context.progress) {
-          newProgress = currProgress;
-          progressCallback(progress: newProgress);
+    if (!boardUnsolvable) {
+      // Continues the search across the boards with the next position to be
+      // filled with all the possible values, one for each of the possible values
+      for (final (idx, possVals)
+          in List.from(possibleValues[possValsIdx]).indexed) {
+        var nextBoard = Board.clone(board);
+        nextBoard.setAt(
+            row: blanks[possValsIdx].row,
+            col: blanks[possValsIdx].col,
+            value: possVals[idx]);
+        var newProgress = context.progress;
+        if (progressCallback != null) {
+          // Use the number of remaining blank positions as a rough progress
+          // indicator; must also guarantee that the progress is monotonically
+          // ascending. This will be a good progress indicator only for "canonical"
+          // Boards with a single solution.
+          var currProgress = ((blanks.length - context.initialBlanks) /
+                  context.initialBlanks *
+                  100)
+              .toInt();
+          if (currProgress > context.progress) {
+            newProgress = currProgress;
+            progressCallback(progress: newProgress);
+          }
         }
+        _findSolutions(nextBoard, progressCallback, maxSolutions, solutions, (
+          level: context.level + 1,
+          progress: newProgress,
+          initialBlanks: context.initialBlanks
+        ));
       }
-      _findSolutions(nextBoard, progressCallback, maxSolutions, solutions, (
-        level: context.level + 1,
-        progress: newProgress,
-        initialBlanks: context.initialBlanks
-      ));
     }
     if (context.level == 0) {
       // Reaching this point at level 0 means we are done: all the solutions
