@@ -14,9 +14,9 @@ class Solver {
   ///
   /// If [puzzle] is not a solvable board, an [ArgumentError] is thrown. If
   /// [maxSolutions] is less than 1, an [ArgumentError] is thrown.
-  static List<Board> findSolutions(
-      final Board puzzle, final FindSolutionsProgress? progressCallback,
-      [final int maxSolutions = 1]) {
+  static List<Board> findSolutions(final Board puzzle,
+      [final FindSolutionsProgress? progressCallback,
+      final int maxSolutions = 1]) {
     // Validate the parameters
     if (maxSolutions < 1) {
       throw ArgumentError('maxSolutions must be at least 1');
@@ -46,6 +46,12 @@ class Solver {
       // further.
       return;
     }
+    if (board.isComplete) {
+      // The board is a solution. No need to search further.
+      solutions.add(board);
+      return;
+    }
+
     var blanks = board.blankPositions;
     var possibleValues = <Set<int>>[];
     for (var blank in blanks) {
@@ -65,18 +71,18 @@ class Solver {
         // A blank position with no possible value has been found; the board is
         // not solvable.
         boardUnsolvable = true;
+        break;
       }
     }
     if (!boardUnsolvable) {
       // Continues the search across the boards with the next position to be
       // filled with all the possible values, one for each of the possible values
-      for (final (idx, possVals)
-          in List.from(possibleValues[possValsIdx]).indexed) {
+      for (final possVal in List.from(possibleValues[possValsIdx])) {
         var nextBoard = Board.clone(board);
         nextBoard.setAt(
             row: blanks[possValsIdx].row,
             col: blanks[possValsIdx].col,
-            value: possVals[idx]);
+            value: possVal);
         var newProgress = context.progress;
         if (progressCallback != null) {
           // Use the number of remaining blank positions as a rough progress
