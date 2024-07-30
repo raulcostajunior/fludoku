@@ -1,6 +1,6 @@
 name: fludoku
 description: A library for generating and solving Sudoku boards.
-version: 1.0.0
+version: 0.6.0
 repository: https://github.com/raulcostajunior/fludoku
 
 environment:
@@ -8,7 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  # path: ^1.8.0
+# path: ^1.8.0
 
 dev_dependencies:
   lints: ^3.0.0
