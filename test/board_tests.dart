@@ -2,7 +2,7 @@ import 'package:fludoku/board.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var invalidBoardValueRange = Board.from([
+  final invalidBoardValueRange = Board.from([
     [2, 19, 5, 7, 4, 3, 8, 6, 1],
     [4, 3, 1, 8, 6, 5, 9, 2, 7],
     [8, 7, 6, 1, 9, 2, 5, 4, 3],
@@ -14,7 +14,7 @@ void main() {
     [1, 5, 4, 9, 3, 8, 6, 7, 2],
   ]);
 
-  var invalidBoardColumnLine = Board.from([
+  final invalidBoardColumnLine = Board.from([
     [5, 1, 6, 8, 4, 9, 7, 3, 2], // 2 is repeated in the fourth column.
     [3, 2, 7, 6, 1, 5, 4, 8, 9], // 3 is repeated in the fourth column.
     [8, 4, 9, 7, 2, 3, 1, 6, 5], // 9 is repeated in the fifth column.
@@ -26,7 +26,7 @@ void main() {
     [7, 9, 1, 3, 5, 4, 6, 2, 8],
   ]);
 
-  var invalidBoardSection = Board.from([
+  final invalidBoardSection = Board.from([
     [2, 9, 5, 7, 4, 3, 8, 6, 1], // 2 repeated in first section and 2nd. column.
     [4, 2, 1, 8, 6, 5, 9, 3, 7], // 3 repeated in third section and 8th. column.
     [8, 7, 6, 1, 9, 2, 5, 4, 3],
@@ -38,7 +38,7 @@ void main() {
     [1, 5, 4, 9, 3, 8, 6, 7, 2],
   ]);
 
-  var boardWithBlanks = Board.from([
+  final boardWithBlanks = Board.from([
     [2, 9, 5, 7, 0, 3, 8, 6, 1], // a blank in the fifth column of first row
     [4, 3, 1, 8, 6, 5, 9, 2, 7],
     [8, 7, 6, 1, 9, 2, 5, 4, 3],
@@ -50,7 +50,7 @@ void main() {
     [1, 0, 4, 9, 3, 8, 6, 7, 2], // a blank in the second column of last row
   ]);
 
-  var solvedBoard = Board.from([
+  final solvedBoard = Board.from([
     [2, 9, 5, 7, 4, 3, 8, 6, 1],
     [4, 3, 1, 8, 6, 5, 9, 2, 7],
     [8, 7, 6, 1, 9, 2, 5, 4, 3],
