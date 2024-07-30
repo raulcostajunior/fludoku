@@ -63,10 +63,6 @@ void main() {
   ]);
 
   group("Board Tests - ", () {
-    setUp(() {
-      // Additional setup goes here.
-    });
-
     test("Board is initially empty", () {
       var board = Board();
       expect(board.isEmpty, true);
