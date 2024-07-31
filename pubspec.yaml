@@ -1,5 +1,5 @@
 name: fludoku
-description: A library for generating and solving Sudoku boards.
+description: A package for generating and solving Sudoku boards.
 version: 0.6.0
 repository: https://github.com/raulcostajunior/fludoku
 
