@@ -48,7 +48,7 @@ class Board {
     for (var row = 0; row < Board.dimension; row++) {
       for (var col = 0; col < Board.dimension; col++) {
         if (_values[row][col] == 0) {
-          blanks.add((row:row, col:col));
+          blanks.add((row: row, col: col));
         }
       }
     }
@@ -105,7 +105,7 @@ class Board {
   /// If setting the [value] would invalidate the board, an [ArgumentError] is thrown.
   void setAt({required int row, required int col, required int value}) {
     _checkRowCol(row, col);
-    if (value < 0 || value >= Board.maxValue) {
+    if (value < 0 || value > Board.maxValue) {
       throw RangeError(
           'value must be between 0 and ${Board.maxValue}. 0 is the blank value');
     }
@@ -180,7 +180,7 @@ class Board {
     for (var row = 0; row < Board.dimension; row++) {
       for (var col = 0; col < Board.dimension; col++) {
         if (_values[row][col] < 0 || _values[row][col] > Board.maxValue) {
-          invalidPositions.add((row:row, col:col));
+          invalidPositions.add((row: row, col: col));
           if (stopAtFirst) {
             return invalidPositions;
           }
@@ -194,7 +194,7 @@ class Board {
         if (currentValue != 0 && currentValue <= Board.maxValue) {
           for (var col2 = col + 1; col2 < Board.dimension; col2++) {
             if (_values[row][col2] == currentValue) {
-              invalidPositions.add((row:row, col:col));
+              invalidPositions.add((row: row, col: col));
               if (stopAtFirst) {
                 return invalidPositions;
               }
@@ -213,13 +213,13 @@ class Board {
         if (currentValue != 0 && currentValue <= Board.maxValue) {
           for (var row2 = row + 1; row2 < Board.dimension; row2++) {
             if (_values[row2][col] == currentValue) {
-              invalidPositions.add((row:row, col:col));
+              invalidPositions.add((row: row, col: col));
               if (stopAtFirst) {
                 return invalidPositions;
               }
               // Also adds the position of the repeated item to the list
               // of invalids
-              invalidPositions.add((row:row2, col:col));
+              invalidPositions.add((row: row2, col: col));
             }
           }
         }
@@ -252,7 +252,7 @@ class Board {
                   colFirst: sectionValue.colFirst,
                   repeated: true,
                 );
-                invalidPositions.add((row:row, col:col));
+                invalidPositions.add((row: row, col: col));
                 if (stopAtFirst) {
                   return invalidPositions;
                 }
@@ -275,7 +275,8 @@ class Board {
       // have already been registered at the moment the repetition has been found.
       for (var sectionValue in sectionValues) {
         if (sectionValue.repeated) {
-          invalidPositions.add((row:sectionValue.rowFirst, col:sectionValue.colFirst));
+          invalidPositions
+              .add((row: sectionValue.rowFirst, col: sectionValue.colFirst));
           // A first occurrence of a repeated value cannot be the first error found - the
           // repetition itself would have been the first error. If the stopAtFirst
           // method argument is true this point would never have been reached, so there's
