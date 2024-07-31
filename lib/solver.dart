@@ -30,7 +30,7 @@ class Solver {
 
     var solutions = <Board>[];
     _findSolutions(puzzle, progressCallback, maxSolutions, solutions,
-        (level: 0, progress: 0, initialBlanks: puzzle.blankPositions.length));
+        (level: 0, progress: 0));
 
     return solutions;
   }
@@ -77,7 +77,8 @@ class Solver {
     if (!boardUnsolvable) {
       // Continues the search across the boards with the next position to be
       // filled with all the possible values, one for each of the possible values
-      for (final possVal in List.from(possibleValues[possValsIdx])) {
+      for (final (idx, possVal)
+          in List.from(possibleValues[possValsIdx]).indexed) {
         var nextBoard = Board.clone(board);
         nextBoard.setAt(
             row: blanks[possValsIdx].row,
@@ -85,26 +86,21 @@ class Solver {
             value: possVal);
         var newProgress = context.progress;
         if (progressCallback != null && context.level == 0) {
-          // Use the number of remaining blank positions as a rough progress
+          // Use the minimum number of possible values as a rough progress
           // indicator; must also guarantee that the progress is monotonically
           // ascending. Only level 0 (searching within the original board
           // puzzle) is considered for reporting progress. Otherwise, the
           // progress would keep bouncing due to the required backtracks that
           // happen at deeper levels.
-          var currProgress = ((context.initialBlanks - blanks.length) /
-                  context.initialBlanks *
-                  100)
-              .toInt();
+          var currProgress =
+              ((idx + 1) / possibleValues[possValsIdx].length * 100).toInt();
           if (currProgress > context.progress) {
             newProgress = currProgress;
             progressCallback(newProgress);
           }
         }
-        _findSolutions(nextBoard, progressCallback, maxSolutions, solutions, (
-          level: context.level + 1,
-          progress: newProgress,
-          initialBlanks: context.initialBlanks
-        ));
+        _findSolutions(nextBoard, progressCallback, maxSolutions, solutions,
+            (level: context.level + 1, progress: newProgress));
       }
     }
     if (context.level == 0) {
@@ -136,4 +132,4 @@ class Solver {
   }
 }
 
-typedef _FindSolutionsContext = ({int level, int progress, int initialBlanks});
+typedef _FindSolutionsContext = ({int level, int progress});

@@ -108,8 +108,14 @@ void main() {
     });
 
     test("Finds all solutions for a board with few solutions", () {
-      final solutions =
-          Solver.findSolutions(solvableThreeSolutions, maxSolutions: 20);
+      var higherProgress = -1;
+      final solutions = Solver.findSolutions(solvableThreeSolutions,
+          maxSolutions: 20, progressCallback: (progress) {
+        expect(progress >= higherProgress, true);
+        higherProgress = progress;
+        print("Progress: $progress %");
+      });
+      expect(higherProgress, 100);
       expect(solutions.length, 3);
       for (final solution in solutions) {
         expect(solution.isComplete, true);
@@ -122,8 +128,9 @@ void main() {
       var higherProgress = -1;
       final solutions = Solver.findSolutions(solvableHardOneSolution,
           maxSolutions: 20, progressCallback: (progress) {
-        expect(progress > higherProgress, true);
+        expect(progress >= higherProgress, true);
         higherProgress = progress;
+        print("Progress: $progress %");
       });
       expect(higherProgress, 100);
       expect(solutions.length, 1);
@@ -138,8 +145,9 @@ void main() {
       // number of solutions known to be satisfiable.
       var solutions = Solver.findSolutions(solvableTooManySolutions,
           maxSolutions: 20, progressCallback: (progress) {
-        expect(progress > higherProgress, true);
+        expect(progress >= higherProgress, true);
         higherProgress = progress;
+        print("Progress: $progress %");
       });
       expect(higherProgress, 100);
       expect(solutions.length, 20);
@@ -151,7 +159,7 @@ void main() {
       higherProgress = -1;
       solutions = Solver.findSolutions(solvableTooManySolutions,
           maxSolutions: 10, progressCallback: (progress) {
-        expect(progress > higherProgress, true);
+        expect(progress >= higherProgress, true);
         higherProgress = progress;
       });
       expect(higherProgress, 100);
