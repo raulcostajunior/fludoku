@@ -1,15 +1,11 @@
 Dart package for generating and solving Sudoku boards.
 
-## Running the Tests
+## Tests
 
-```
-dart test ./test/board_tests.dart -r expanded
-``` 
+Unit tests are available for the `Board` and `Solver` classes.
 
-and
+Use either `dart test` or `flutter test` to run the tests.
 
-```
-dart test ./test/solver_tests.dart -r expanded
-```
+## Status
 
-This is a work in progress; the board generation functionality isn't available yet.
+This is a work in progress. Board generation should be available soon.
