@@ -29,8 +29,7 @@ class Solver {
     }
 
     var solutions = <Board>[];
-    _findSolutions(puzzle, progressCallback, maxSolutions, solutions,
-        (level: 0, progress: 0));
+    _findSolutions(puzzle, progressCallback, maxSolutions, solutions);
 
     return solutions;
   }
@@ -40,7 +39,7 @@ class Solver {
       final FindSolutionsProgress? progressCallback,
       final int maxSolutions,
       List<Board> solutions,
-      _FindSolutionsContext context) {
+      [_FindSolutionsContext context = (level: 0, progress: 0)]) {
     if (solutions.length >= maxSolutions) {
       // The maximum number of solutions has been found. No need to search
       // further.
