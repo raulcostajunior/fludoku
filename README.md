@@ -11,3 +11,5 @@ and
 ```
 dart test ./test/solver_tests.dart -r expanded
 ```
+
+This is a work in progress; the board generation functionality isn't available yet.
