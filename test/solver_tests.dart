@@ -106,5 +106,59 @@ void main() {
       expect(solutions.length, 1);
       expect(solutions[0].isComplete, true);
     });
+
+    test("Finds all solutions for a board with few solutions", () {
+      final solutions =
+          Solver.findSolutions(solvableThreeSolutions, maxSolutions: 20);
+      expect(solutions.length, 3);
+      for (final solution in solutions) {
+        expect(solution.isComplete, true);
+      }
+    });
+
+    test("Finds the solution for a Sudoku board considered hard", () {
+      // Also checks the activations of the progress callback and verifies
+      // that it is monotonically ascending.
+      var higherProgress = -1;
+      final solutions = Solver.findSolutions(solvableHardOneSolution,
+          maxSolutions: 20, progressCallback: (progress) {
+        expect(progress > higherProgress, true);
+        higherProgress = progress;
+      });
+      expect(higherProgress, 100);
+      expect(solutions.length, 1);
+      expect(solutions[0].isComplete, true);
+    });
+
+    test("The limit for maximum number of solutions is being enforced", () {
+      // Also checks the activations of the progress callback and verifies
+      // that it is monotonically ascending.
+      var higherProgress = -1;
+      // Finds the solutions for a board with many solutions limited to a
+      // number of solutions known to be satisfiable.
+      var solutions = Solver.findSolutions(solvableTooManySolutions,
+          maxSolutions: 20, progressCallback: (progress) {
+        expect(progress > higherProgress, true);
+        higherProgress = progress;
+      });
+      expect(higherProgress, 100);
+      expect(solutions.length, 20);
+      for (var solution in solutions) {
+        expect(solution.isComplete, true);
+      }
+      // Finds the solutions for the same board used before, but this time
+      // use a smaller value for the maximum number of solutions.
+      higherProgress = -1;
+      solutions = Solver.findSolutions(solvableTooManySolutions,
+          maxSolutions: 10, progressCallback: (progress) {
+        expect(progress > higherProgress, true);
+        higherProgress = progress;
+      });
+      expect(higherProgress, 100);
+      expect(solutions.length, 10);
+      for (var solution in solutions) {
+        expect(solution.isComplete, true);
+      }
+    });
   }); // group
 } // main
