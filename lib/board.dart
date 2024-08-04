@@ -90,7 +90,7 @@ class Board {
 
   //#endregion
 
-  /// Returns the [value] at the specified [row] and [column] on the Sudoku board.
+  /// Returns the [value] at the specified [row] and [col] on the Sudoku board.
   ///
   /// If the row or column is out of range, a [RangeError] is thrown.
   int getAt({required int row, required int col}) {
@@ -100,7 +100,7 @@ class Board {
 
   /// Sets the value at the specified row and column on the Sudoku board.
   ///
-  /// If the [row] or [column] is out of range, a [RangeError] is thrown.
+  /// If the [row] or [col] is out of range, a [RangeError] is thrown.
   /// If the value is out of range, a [RangeError] is thrown.
   /// If setting the [value] would invalidate the board, an [ArgumentError] is thrown.
   void setAt({required int row, required int col, required int value}) {
@@ -123,7 +123,7 @@ class Board {
 
   /// Returns the set of possible values that can be placed at the specified
   /// position of the Board.
-  /// If the [row] or [column] is out of range, a [RangeError] is thrown.
+  /// If the [row] or [col] is out of range, a [RangeError] is thrown.
   Set<int> possibleValuesAt({required int row, required int col}) {
     _checkRowCol(row, col);
     var possibleValues =
