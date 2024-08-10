@@ -102,8 +102,9 @@ void main() {
       expect(invalidBoardColumnLine.isValid, false);
       final invalidPositions = invalidBoardColumnLine.invalidPositions;
       expect(invalidPositions.length, 16);
-      var invalidsPerCol =
-          List.generate(Board.dimension, (col) => 0, growable: false);
+      var invalidsPerCol = List.generate(
+          invalidBoardColumnLine.dimension, (col) => 0,
+          growable: false);
       for (final invalidPos in invalidPositions) {
         invalidsPerCol[invalidPos.col]++;
       }

@@ -2,31 +2,42 @@ import 'dart:math';
 
 /// A Sudoku puzzle Board.
 class Board {
-  static const dimension = 9;
-  static final groupSize = sqrt(dimension).toInt();
-  static const maxValue = dimension;
+  static const allowedDimensions = [4, 9, 16, 25];
+  final int _dimension;
+  late int _groupSize;
+  late int _maxValue;
 
   //#region Constructors
 
-  Board() {
-    _values = List.generate(Board.dimension,
-        (row) => List.generate(Board.dimension, (col) => 0, growable: false),
+  Board([dimension = 9])
+      : assert(Board.allowedDimensions.contains(dimension)),
+        _dimension = dimension {
+    _groupSize = sqrt(_dimension).toInt();
+    _maxValue = _dimension;
+    _groupSize = sqrt(_dimension).toInt();
+    _values = List.generate(_dimension,
+        (row) => List.generate(_dimension, (col) => 0, growable: false),
         growable: false);
   }
 
-  Board.clone(final Board other) {
+  Board.clone(final Board other) : _dimension = other._dimension {
+    _groupSize = other._groupSize;
+    _maxValue = other._maxValue;
     _values = List.generate(
-        Board.dimension,
-        (row) => List.generate(
-            Board.dimension, (col) => other._values[row][col],
+        _dimension,
+        (row) => List.generate(_dimension, (col) => other._values[row][col],
             growable: false),
         growable: false);
   }
 
-  Board.from(final List<List<int>> values) {
+  Board.from(final List<List<int>> values)
+      : assert(Board.allowedDimensions.contains(values.length)),
+        _dimension = values.length {
+    _groupSize = sqrt(_dimension).toInt();
+    _maxValue = _dimension;
     _values = List.generate(
-        Board.dimension,
-        (row) => List.generate(Board.dimension, (col) => values[row][col],
+        values.length,
+        (row) => List.generate(values.length, (col) => values[row][col],
             growable: false),
         growable: false);
   }
@@ -34,6 +45,12 @@ class Board {
   //#endregion
 
   //#region Read-only Properties
+
+  /// The board's dimension - number of rows and columns
+  int get dimension => _dimension;
+
+  /// The maximum value that can be placed in a board position - the range of allowed values is 1 to [maxValue].
+  int get maxValue => _maxValue;
 
   /// Returns true if the board is valid (synonym for "has no invalid position").
   bool get isValid => _getInvalidPositions(stopAtFirst: true).isEmpty;
@@ -45,8 +62,8 @@ class Board {
   /// value 0).
   List<({int row, int col})> get blankPositions {
     var blanks = <({int row, int col})>[];
-    for (var row = 0; row < Board.dimension; row++) {
-      for (var col = 0; col < Board.dimension; col++) {
+    for (var row = 0; row < _dimension; row++) {
+      for (var col = 0; col < _dimension; col++) {
         if (_values[row][col] == 0) {
           blanks.add((row: row, col: col));
         }
@@ -105,9 +122,9 @@ class Board {
   /// If setting the [value] would invalidate the board, an [ArgumentError] is thrown.
   void setAt({required int row, required int col, required int value}) {
     _checkRowCol(row, col);
-    if (value < 0 || value > Board.maxValue) {
+    if (value < 0 || value > _maxValue) {
       throw RangeError(
-          'value must be between 0 and ${Board.maxValue}. 0 is the blank value');
+          'value must be between 0 and $_maxValue. 0 is the blank value');
     }
     var boardWithValue = Board.clone(this);
     boardWithValue._values[row][col] = value;
@@ -126,18 +143,17 @@ class Board {
   /// If the [row] or [col] is out of range, a [RangeError] is thrown.
   Set<int> possibleValuesAt({required int row, required int col}) {
     _checkRowCol(row, col);
-    var possibleValues =
-        Set<int>.from(List.generate(Board.maxValue, (i) => i + 1));
+    var possibleValues = Set<int>.from(List.generate(_maxValue, (i) => i + 1));
     // Removes all values already in the same row and column.
-    for (var i = 0; i < Board.dimension; i++) {
+    for (var i = 0; i < _dimension; i++) {
       possibleValues.remove(_values[row][i]);
       possibleValues.remove(_values[i][col]);
     }
     // Removes all values already in the same board section
-    var rowStart = (row / Board.groupSize).floor() * Board.groupSize;
-    var colStart = (col / Board.groupSize).floor() * Board.groupSize;
-    for (var i = rowStart; i < rowStart + Board.groupSize; i++) {
-      for (var j = colStart; j < colStart + Board.groupSize; j++) {
+    var rowStart = (row / _groupSize).floor() * _groupSize;
+    var colStart = (col / _groupSize).floor() * _groupSize;
+    for (var i = rowStart; i < rowStart + _groupSize; i++) {
+      for (var j = colStart; j < colStart + _groupSize; j++) {
         possibleValues.remove(_values[i][j]);
       }
     }
@@ -146,8 +162,8 @@ class Board {
 
   /// Clears the board.
   void clear() {
-    for (var row = 0; row < Board.dimension; row++) {
-      for (var col = 0; col < Board.dimension; col++) {
+    for (var row = 0; row < _dimension; row++) {
+      for (var col = 0; col < _dimension; col++) {
         _values[row][col] = 0;
       }
     }
@@ -156,11 +172,11 @@ class Board {
   late final List<List<int>> _values;
 
   void _checkRowCol(int row, int col) {
-    if (row < 0 || row >= Board.dimension) {
-      throw RangeError('row must be between 0 and ${Board.dimension - 1}');
+    if (row < 0 || row >= _dimension) {
+      throw RangeError('row must be between 0 and ${_dimension - 1}');
     }
-    if (col < 0 || col >= Board.dimension) {
-      throw RangeError('col must be between 0 and ${Board.dimension - 1}');
+    if (col < 0 || col >= _dimension) {
+      throw RangeError('col must be between 0 and ${_dimension - 1}');
     }
   }
 
@@ -177,9 +193,9 @@ class Board {
     var invalidPositions = <({int row, int col})>[];
 
     // Searches for out of range values
-    for (var row = 0; row < Board.dimension; row++) {
-      for (var col = 0; col < Board.dimension; col++) {
-        if (_values[row][col] < 0 || _values[row][col] > Board.maxValue) {
+    for (var row = 0; row < _dimension; row++) {
+      for (var col = 0; col < _dimension; col++) {
+        if (_values[row][col] < 0 || _values[row][col] > _maxValue) {
           invalidPositions.add((row: row, col: col));
           if (stopAtFirst) {
             return invalidPositions;
@@ -188,11 +204,11 @@ class Board {
       }
     }
     // Searches for duplicate non-empty values across rows
-    for (var row = 0; row < Board.dimension; row++) {
-      for (var col = 0; col < Board.dimension; col++) {
+    for (var row = 0; row < _dimension; row++) {
+      for (var col = 0; col < _dimension; col++) {
         int currentValue = _values[row][col];
-        if (currentValue != 0 && currentValue <= Board.maxValue) {
-          for (var col2 = col + 1; col2 < Board.dimension; col2++) {
+        if (currentValue != 0 && currentValue <= _maxValue) {
+          for (var col2 = col + 1; col2 < _dimension; col2++) {
             if (_values[row][col2] == currentValue) {
               invalidPositions.add((row: row, col: col));
               if (stopAtFirst) {
@@ -207,11 +223,11 @@ class Board {
       }
     }
     // Searches for duplicate non-empty values across columns
-    for (var col = 0; col < Board.dimension; col++) {
-      for (var row = 0; row < Board.dimension; row++) {
+    for (var col = 0; col < _dimension; col++) {
+      for (var row = 0; row < _dimension; row++) {
         int currentValue = _values[row][col];
-        if (currentValue != 0 && currentValue <= Board.maxValue) {
-          for (var row2 = row + 1; row2 < Board.dimension; row2++) {
+        if (currentValue != 0 && currentValue <= _maxValue) {
+          for (var row2 = row + 1; row2 < _dimension; row2++) {
             if (_values[row2][col] == currentValue) {
               invalidPositions.add((row: row, col: col));
               if (stopAtFirst) {
@@ -226,9 +242,9 @@ class Board {
       }
     }
     // Searches for duplicate non-empty values across square sections
-    for (var section = 0; section < Board.dimension; section++) {
-      var initialCol = Board.groupSize * (section % Board.groupSize);
-      var initialRow = Board.groupSize * (section ~/ Board.groupSize);
+    for (var section = 0; section < _dimension; section++) {
+      var initialCol = _groupSize * (section % _groupSize);
+      var initialRow = _groupSize * (section ~/ _groupSize);
       // sectionValues keeps track of the different values in the current section,
       // storing the column and row of the first value found and whether it is repeated.
       // For the purposes of this method, there's no need to store the position of the
@@ -236,10 +252,10 @@ class Board {
       var sectionValues =
           List<({int value, int rowFirst, int colFirst, bool repeated})>.empty(
               growable: true);
-      for (var row = initialRow; row < initialRow + Board.groupSize; row++) {
-        for (var col = initialCol; col < initialCol + Board.groupSize; col++) {
+      for (var row = initialRow; row < initialRow + _groupSize; row++) {
+        for (var col = initialCol; col < initialCol + _groupSize; col++) {
           var value = _values[row][col];
-          if (value != 0 && value <= Board.maxValue) {
+          if (value != 0 && value <= _maxValue) {
             // Value is not blank, check if it is repeated in the section.
             bool isFirstInSection = true;
             for (var sectionValue in sectionValues) {
@@ -294,16 +310,16 @@ class Board {
   @override
   String toString() {
     var strBuff = StringBuffer("\n");
-    for (var lin = 0; lin < Board.dimension; lin++) {
-      for (var col = 0; col < Board.dimension; col++) {
+    for (var lin = 0; lin < _dimension; lin++) {
+      for (var col = 0; col < _dimension; col++) {
         var value = _values[lin][col] > 0 ? _values[lin][col] : '_';
         strBuff.write("$value ");
-        if ((col + 1) % Board.groupSize == 0) {
+        if ((col + 1) % _groupSize == 0) {
           strBuff.write(" ");
         }
       }
       strBuff.write("\n");
-      if ((lin + 1) % Board.groupSize == 0 && (lin + 1) < Board.dimension) {
+      if ((lin + 1) % _groupSize == 0 && (lin + 1) < _dimension) {
         strBuff.write("\n");
       }
     }

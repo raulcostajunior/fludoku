@@ -60,7 +60,7 @@ class Solver {
     // Selects the blank position with the minimum number of possible values to
     // be the next to be filled.
     var boardUnsolvable = false;
-    var minSize = Board.maxValue + 1;
+    var minSize = board.maxValue + 1;
     var possValsIdx = -1;
     for (final (blankIdx, possVals) in possibleValues.indexed) {
       if (possVals.isNotEmpty && possVals.length < minSize) {
