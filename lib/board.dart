@@ -14,7 +14,6 @@ class Board {
         _dimension = dimension {
     _groupSize = sqrt(_dimension).toInt();
     _maxValue = _dimension;
-    _groupSize = sqrt(_dimension).toInt();
     _values = List.generate(_dimension,
         (row) => List.generate(_dimension, (col) => 0, growable: false),
         growable: false);
@@ -135,6 +134,19 @@ class Board {
       // The addition of the value invalidates the board.
       throw ArgumentError(
           'Cannot set ($row, $col) to "$value" as it would invalidate the board');
+    }
+  }
+
+  /// Sets the [value] at the specified [row] and [column] on the Sudoku board,
+  /// if doing so doesn't invalidate the board.
+  ///
+  /// Returns true if the value was set, false otherwise.
+  bool trySetAt({required int row, required int col, required int value}) {
+    try {
+      setAt(row: row, col: col, value: value);
+      return true;
+    } on Error {
+      return false;
     }
   }
 

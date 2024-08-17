@@ -158,6 +158,8 @@ void main() {
       expect(() => board.setAt(row: 0, col: 0, value: 12),
           throwsA(isA<RangeError>()));
       expect(board == boardWithBlanks, true);
+      // Attempt again, without throwing an exception.
+      expect(board.trySetAt(row: 0, col: 0, value: 12), false);
     });
 
     test("Set value that makes board invalid is rejected", () {
@@ -165,12 +167,16 @@ void main() {
       // 6 is already on the line.
       expect(() => board.setAt(row: 0, col: 4, value: 6),
           throwsA(isA<ArgumentError>()));
+      // Attempt again, without throwing an exception.
+      expect(board.trySetAt(row: 0, col: 4, value: 6), false);
     });
 
     test("Properly set value is accepted", () {
       var board = Board.clone(boardWithBlanks);
       // 6 is already on the line.
       board.setAt(row: 0, col: 4, value: 4);
+      // trySetAt must also be able to do it
+      expect(board.trySetAt(row: 0, col: 4, value: 4), true);
       expect(board.getAt(row: 0, col: 4), 4);
     });
 
