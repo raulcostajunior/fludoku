@@ -9,7 +9,7 @@ class Board {
 
   //#region Constructors
 
-  Board([dimension = 9])
+  Board([int dimension = 9])
       : assert(Board.allowedDimensions.contains(dimension)),
         _dimension = dimension {
     _groupSize = sqrt(_dimension).toInt();
