@@ -80,37 +80,36 @@ void main() {
   group("Solver Tests - ", () {
     test("Empty board is not solvable", () {
       var emptyBoard = Board();
-      expect(() => Solver.findSolutions(emptyBoard), throwsA(predicate((exc) {
+      expect(() => findSolutions(emptyBoard), throwsA(predicate((exc) {
         return exc is ArgumentError &&
             (exc.message as String).contains("The board is empty");
       })));
     });
 
     test("Invalid board is not solvable", () {
-      expect(() => Solver.findSolutions(invalidBoard), throwsA(predicate((exc) {
+      expect(() => findSolutions(invalidBoard), throwsA(predicate((exc) {
         return exc is ArgumentError &&
             (exc.message as String).contains("The board is invalid");
       })));
     });
 
     test("Cannot solve unsolvableBoard", () {
-      expect(() => Solver.findSolutions(unsolvableBoard),
-          throwsA(predicate((exc) {
+      expect(() => findSolutions(unsolvableBoard), throwsA(predicate((exc) {
         return exc is ArgumentError &&
             (exc.message as String).contains("Board is not solvable");
       })));
     });
 
     test("Can solve solvableBoard", () {
-      final solutions = Solver.findSolutions(solvableOneSolution);
+      final solutions = findSolutions(solvableOneSolution);
       expect(solutions.length, 1);
       expect(solutions[0].isComplete, true);
     });
 
     test("Finds all solutions for a board with few solutions", () {
       var higherProgress = -1;
-      final solutions = Solver.findSolutions(solvableThreeSolutions,
-          maxSolutions: 20, progressCallback: (progress) {
+      final solutions = findSolutions(solvableThreeSolutions, maxSolutions: 20,
+          progressCallback: (progress) {
         expect(progress >= higherProgress, true);
         higherProgress = progress;
         print("Progress: $progress %");
