@@ -125,8 +125,8 @@ void main() {
       // Also checks the activations of the progress callback and verifies
       // that it is monotonically ascending.
       var higherProgress = -1;
-      final solutions = Solver.findSolutions(solvableHardOneSolution,
-          maxSolutions: 20, progressCallback: (progress) {
+      final solutions = findSolutions(solvableHardOneSolution, maxSolutions: 20,
+          progressCallback: (progress) {
         expect(progress >= higherProgress, true);
         higherProgress = progress;
         print("Progress: $progress %");
@@ -142,8 +142,8 @@ void main() {
       var higherProgress = -1;
       // Finds the solutions for a board with many solutions limited to a
       // number of solutions known to be satisfiable.
-      var solutions = Solver.findSolutions(solvableTooManySolutions,
-          maxSolutions: 20, progressCallback: (progress) {
+      var solutions = findSolutions(solvableTooManySolutions, maxSolutions: 20,
+          progressCallback: (progress) {
         expect(progress >= higherProgress, true);
         higherProgress = progress;
         print("Progress: $progress %");
@@ -156,8 +156,8 @@ void main() {
       // Finds the solutions for the same board used before, but this time
       // use a smaller value for the maximum number of solutions.
       higherProgress = -1;
-      solutions = Solver.findSolutions(solvableTooManySolutions,
-          maxSolutions: 10, progressCallback: (progress) {
+      solutions = findSolutions(solvableTooManySolutions, maxSolutions: 10,
+          progressCallback: (progress) {
         expect(progress >= higherProgress, true);
         higherProgress = progress;
       });
