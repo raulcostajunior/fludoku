@@ -39,11 +39,11 @@ List<int> _genCandidatesVector([int dimension = 9]) {
 /// are used by the Generation algorithm as an heuristic while finding a Sudoku
 /// board (with only one solution) among a set of possible solutions. The
 /// heuristic aims at minimizing the number of filled board positions while
-/// going from a board with multiple solutions and empty positions and at the
-/// same time filling those positions with the value the varies the least, which
-/// in theory would be easier to find by the Sudoku player, leaving the
-/// positions with more variations (theoratically more difficult) for the player
-/// to discover.
+/// going from a board with multiple solutions and empty positions to the board
+/// with a single solution. At the same time, filling those positions with the
+/// value the varies the least, which, in theory, would be easier for a Sudoku
+/// player to find, leaving positions with more variations (theoratically more
+/// difficult) for the player to discover.
 (int lessFreqVarVal, int lessFreqVarPos) _getLessFrequentVariation(
     final List<Board> boards) {
   assert(boards.isNotEmpty);
