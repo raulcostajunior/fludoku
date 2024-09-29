@@ -1,14 +1,69 @@
+import 'package:fludoku/solver.dart';
+
 import 'board.dart' show Board;
 import 'dart:math';
 import 'package:fixnum/fixnum.dart';
 
-enum PuzzleDifficulty { easy, medium, hard }
+enum PuzzleDifficulty {
+  easy(maxEmpty: 34),
+  medium(maxEmpty: 48),
+  hard(maxEmpty: 58);
 
-typedef GeneratorProgress = void Function(int currentStep, int totalSteps);
+  const PuzzleDifficulty({required this.maxEmpty});
+
+  final int maxEmpty;
+}
+
+typedef GeneratorProgress = void Function({int current, int total});
 
 Board generateBoard(PuzzleDifficulty difficulty,
     [int dimension = 9, GeneratorProgress? progressCallback]) {
   assert(Board.allowedDimensions.contains(dimension));
+  // The last step, reduction of empty positions to guarantee single solution,
+  // is the one that takes longer, specially for the Hard level.
+  const totalSteps = 5;
+  // Step 1 -> random candidate vector generation.
+  var currentStep = 1;
+  progressCallback?.call(current: currentStep, total: totalSteps);
+  final candidatesVector = _genCandidatesVector(dimension);
+  // Step 2 -> seeds a valid random board by initializing a random position with
+  //           a random value.
+  currentStep++;
+  var rnd = Random();
+  progressCallback?.call(current: currentStep, total: totalSteps);
+  Board genBoard = Board(dimension);
+  genBoard.setAt(
+      row: rnd.nextInt(dimension),
+      col: rnd.nextInt(dimension),
+      value: rnd.nextInt(dimension) + 1);
+  // Step 3 -> solve the random board seeded in the last step - simply picks up
+  //           one of the many possible solutions for a board with just one
+  //           position set.
+  currentStep++;
+  progressCallback?.call(current: currentStep, total: totalSteps);
+  // For this specific execution of findSolutionWithCandidates, it is safe to
+  // assume that a solution will be found: we started from a board with only
+  // one non-empty position.
+  Board solvedGenBoard =
+      findSolutionWithCandidates(genBoard, candidatesVector)!;
+  // Step 4 -> empty the maximum number of positions allowed for the difficulty
+  //           level of the board being generated.
+  currentStep++;
+  progressCallback?.call(current: currentStep, total: totalSteps);
+  genBoard = Board.clone(solvedGenBoard);
+  final emptyPositions = <({int row, int col})>{};
+  while (emptyPositions.length < difficulty.maxEmpty) {
+    emptyPositions
+        .add((row: rnd.nextInt(dimension), col: rnd.nextInt(dimension)));
+  }
+  for (final emptyPos in emptyPositions) {
+    genBoard.setAt(row: emptyPos.row, col: emptyPos.col, value: 0);
+  }
+  // Steps 5 -> Fill the empty positions one by one until the generated
+  // board has only one solution.
+  currentStep++;
+  progressCallback?.call(current: currentStep, total: totalSteps);
+  // TODO: implement the fifth step
 }
 
 /// Generates a vector with candidate values for a board position in a random

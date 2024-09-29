@@ -33,6 +33,65 @@ List<Board> findSolutions(final Board puzzle,
   return solutions;
 }
 
+/// Finds a solution for a given [puzzle] board, using a vector of unique
+/// candidate values, [candidatesVector], while searching for the solution.
+/// The vector defines the order in which the values are tried for each empty
+/// cell. Different vectors usually lead to different solutions when the puzzle
+/// has multiple solutions.
+/// If the [puzzle] is not solvable, returns [null].
+Board? findSolutionWithCandidates(
+    final Board puzzle, List<int> candidatesVector) {
+  assert(candidatesVector.length == 9);
+  assert(candidatesVector.toSet().length == 9);
+  assert(candidatesVector.every((element) => element >= 1 && element <= 9));
+  assert(puzzle.isSolvable);
+
+  List<({int row, int col})> blanks = puzzle.blankPositions;
+  Board solvedBoard =
+      Board.clone(puzzle); // puzzle is the starting poin for the solvedBoard
+  int currCellPos = 0;
+  bool unsolvable = false;
+  while (currCellPos < blanks.length && !unsolvable) {
+    var currCell = blanks[currCellPos];
+    var currCellValue = solvedBoard.getAt(row: currCell.row, col: currCell.col);
+    int candidatesIdx = 0;
+    if (currCellValue != 0) {
+      // We're backtracking, so we must start with the next candidate value
+      candidatesIdx = candidatesVector.indexOf(currCellValue) + 1;
+    }
+    bool currCellSolved = false;
+    while (!currCellSolved && candidatesIdx < candidatesVector.length) {
+      try {
+        solvedBoard.setAt(
+            row: currCell.row,
+            col: currCell.col,
+            value: candidatesVector[candidatesIdx]);
+        currCellSolved = true;
+      } on ArgumentError {
+        // The current candidate value would invalidate the board, try the next
+        candidatesIdx++;
+      }
+    }
+    if (currCellSolved) {
+      currCellPos++;
+    } else {
+      // There was no solution for the next cell - we have to roll back to the
+      // previous cell (if there one; if not the board has no solution).
+      if (currCellPos > 0) {
+        // Resets the current cell before going back to the previous one
+        solvedBoard.setAt(row: currCell.row, col: currCell.col, value: 0);
+        currCellPos--;
+      } else {
+        unsolvable = true;
+      }
+    }
+  }
+  if (unsolvable) {
+    return null;
+  }
+  return solvedBoard;
+}
+
 void _findSolutions(
     final Board board,
     final FindSolutionsProgress? progressCallback,

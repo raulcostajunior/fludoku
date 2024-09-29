@@ -77,6 +77,9 @@ class Board {
   /// Returns true if the Sudoku board is complete (valid without any blank position)
   bool get isComplete => blankPositions.isEmpty && isValid;
 
+  /// Returns true if the Sudoku board is solvable (not empty and valid but yet not complete).
+  bool get isSolvable => !isEmpty && isValid && !isComplete;
+
   //#endregion
 
   //#region Identity and Equality
