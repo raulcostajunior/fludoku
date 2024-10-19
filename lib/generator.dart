@@ -84,21 +84,20 @@ List<int> _genCandidatesVector([int dimension = 9]) {
   return candidates;
 }
 
-/// Given a [boards] set of Boards, returns the position [lessFreqVarPos] where
-/// the maximum difference between the accumulated frequency of values for the
-/// position and the minimum frequency among all the values for the position.
-/// Also returns the value for which the minimum frequency in [lessFreqVarPos]
-/// occurs. That value is returned in [lessFreqVarVal].
+/// Given a [boards] set of Boards, finds the position where the difference
+/// between the accumulated frequencies of all the values and the minimum value
+/// frequency is maximal, [lessFreqVarPos]. Also gets the value for which the
+/// minimum frequency occurs, [lessFreqVarVal].
 ///
 /// This position of maximum frequency dispersion and its less frequent value
 /// are used by the Generation algorithm as an heuristic while finding a Sudoku
 /// board (with only one solution) among a set of possible solutions. The
 /// heuristic aims at minimizing the number of filled board positions while
 /// going from a board with multiple solutions and empty positions to the board
-/// with a single solution. At the same time, filling those positions with the
-/// value the varies the least, which, in theory, would be easier for a Sudoku
-/// player to find, leaving positions with more variations (theoratically more
-/// difficult) for the player to discover.
+/// with a single solution. At the same time, fills those positions with the
+/// value the varies the least, which, in theory, are easier for a Sudoku
+/// player to find, leaving positions with more variations for the player to
+/// discover.
 (int lessFreqVarVal, int lessFreqVarPos) _getLessFrequentVariation(
     final List<Board> boards) {
   assert(boards.isNotEmpty);
