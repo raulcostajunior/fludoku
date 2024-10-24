@@ -63,7 +63,21 @@ Board generateBoard(PuzzleDifficulty difficulty,
   // board has only one solution.
   currentStep++;
   progressCallback?.call(current: currentStep, total: totalSteps);
-  // TODO: implement the fifth step
+  // The positions will be optimally set to reduce the board solution set as
+  // fast as possible.
+  while (true) {
+    final solutions = findSolutions(genBoard, maxSolutions: 20);
+    if (solutions.length == 1) {
+      // the current genBoard is a true Sudoku puzzle (only has one solution)
+      break;
+    }
+    var (val, pos) = _getLessFrequentVariation(solutions);
+    genBoard.setAt(
+        row: pos ~/ genBoard.dimension,
+        col: pos % genBoard.dimension,
+        value: val);
+  }
+  return genBoard;
 }
 
 /// Generates a vector with candidate values for a board position in a random
