@@ -71,7 +71,7 @@ Board generateBoard(PuzzleDifficulty difficulty,
       // the current genBoard is a true Sudoku puzzle (only has one solution)
       break;
     }
-    var (val, pos) = _getLessFrequentVariation(solutions);
+    final (val, pos) = _getLessFrequentVariation(solutions);
     genBoard.setAt(
         row: pos ~/ genBoard.dimension,
         col: pos % genBoard.dimension,
