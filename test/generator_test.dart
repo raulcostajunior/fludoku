@@ -11,12 +11,12 @@ void main() {
         final puzzle = generateBoard(difficulty);
         expect(puzzle.isSolvable, true);
         expect(puzzle.isValid, true);
-        expect(puzzle.blankPositions.length <= difficulty.maxEmpty, true);
+        expect(puzzle.blankPositions.length <= difficulty.maxEmpty(), true);
         final solutions = findSolutions(puzzle, maxSolutions: 20);
         expect(solutions.length, 1);
         expect(solutions[0].isComplete, true);
         print(
-            "Generated ${difficulty.name} board has ${puzzle.blankPositions.length} blanks (max. allowed is ${difficulty.maxEmpty})");
+            "Generated ${difficulty.name} board has ${puzzle.blankPositions.length} blanks (max. allowed is ${difficulty.maxEmpty()})");
         print(puzzle);
       });
     }

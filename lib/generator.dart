@@ -5,15 +5,28 @@ import 'dart:math';
 import 'package:fixnum/fixnum.dart';
 
 enum PuzzleDifficulty {
-  // TODO: maxEmpty must be relative to the board dimension.
-  // Easy: 41.97%, Medium: 59.25%, Hard: 71.60%
-  easy(maxEmpty: 34),
-  medium(maxEmpty: 48),
-  hard(maxEmpty: 58);
+  easy(maxEmptyPercent: 0.4197),
+  medium(maxEmptyPercent: 0.5925),
+  hard(maxEmptyPercent: 0.7160);
 
-  const PuzzleDifficulty({required this.maxEmpty});
+  const PuzzleDifficulty({required double maxEmptyPercent})
+      : _maxEmptyPercent = maxEmptyPercent;
 
-  final int maxEmpty;
+  final double _maxEmptyPercent;
+
+  /// Calculates the maximum number of empty positions allowed for a puzzle board of the given dimension, based on the difficulty level.
+  ///
+  /// The maximum number of empty positions is determined by the [PuzzleDifficulty] enum, which specifies a maximum percentage of empty positions for each difficulty level.
+  ///
+  /// Parameters:
+  /// - `dimension`: The dimension of the puzzle board, which must be one of the allowed dimensions specified in [Board.allowedDimensions]. Defaults to 9.
+  ///
+  /// Returns:
+  /// The maximum number of empty positions allowed for the puzzle board of the given dimension.
+  int maxEmpty({int dimension = 9}) {
+    assert(Board.allowedDimensions.contains(dimension));
+    return (dimension * dimension * _maxEmptyPercent).toInt();
+  }
 }
 
 typedef GeneratorProgress = void Function({int current, int total});
@@ -54,7 +67,8 @@ Board generateBoard(PuzzleDifficulty difficulty,
   progressCallback?.call(current: currentStep, total: totalSteps);
   genBoard = Board.clone(solvedGenBoard);
   final emptyPositions = <({int row, int col})>{};
-  while (emptyPositions.length < difficulty.maxEmpty) {
+  final maxEmpty = difficulty.maxEmpty(dimension: genBoard.dimension);
+  while (emptyPositions.length < maxEmpty) {
     emptyPositions
         .add((row: rnd.nextInt(dimension), col: rnd.nextInt(dimension)));
   }
