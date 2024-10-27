@@ -12,15 +12,20 @@ void main() {
   }
   final valueSet = board.trySetAt(row: 1, col: 2, value: 4);
   assert(valueSet == false);
-  print('board:$board');
+  print('board:\n$board\n');
 
-  var smallBoard = Board(4);
-  smallBoard.setAt(row: 0, col: 0, value: 1);
-  smallBoard.setAt(row: 1, col: 1, value: 2);
-  print('smallBoard:$smallBoard');
+  var smallPuzzle = generateBoard(PuzzleDifficulty.hard, 4);
+  print("Small puzzle:\n$smallPuzzle\n");
+  var smallPuzzleSolution = findSolutions(smallPuzzle);
+  print("Small puzzle solution:\n$smallPuzzleSolution\n");
 
-  var bigBoard = generateBoard(PuzzleDifficulty.hard, 16);
-  print("Big board: $bigBoard");
-  var bigBoardSolution = findSolutions(bigBoard);
-  print("Big board solution: $bigBoardSolution");
+  var puzzle = generateBoard(PuzzleDifficulty.hard, 9);
+  print("Puzzle:\n$puzzle\n");
+  var puzzleSolution = findSolutions(puzzle);
+  print("Puzzle solution:\n$puzzleSolution\n");
+
+  var bigPuzzle = generateBoard(PuzzleDifficulty.medium, 16);
+  print("Big puzzle:\n$bigPuzzle\n");
+  var bigPuzzleSolution = findSolutions(bigPuzzle);
+  print("Big puzzle solution:\n$bigPuzzleSolution\n");
 }
