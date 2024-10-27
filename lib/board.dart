@@ -328,20 +328,21 @@ class Board {
     for (var lin = 0; lin < _dimension; lin++) {
       for (var col = 0; col < _dimension; col++) {
         int value = _values[lin][col];
-        if (value == 0) {
-          strBuff.write(" _ ");
-        } else if (value < 10) {
-          strBuff.write(" $value ");
-        } else {
-          strBuff.write("$value ");
+        switch (value) {
+          case 0:
+            strBuff.write(" - ");
+          case < 10:
+            strBuff.write(" $value ");
+          default:
+            strBuff.write("$value ");
         }
         if ((col + 1) % _groupSize == 0) {
-          strBuff.write(" ");
+          strBuff.write("  ");
         }
       }
       strBuff.write("\n");
       if ((lin + 1) % _groupSize == 0 && (lin + 1) < _dimension) {
-        strBuff.write("\n");
+        strBuff.write("\n\n");
       }
     }
     return strBuff.toString();
