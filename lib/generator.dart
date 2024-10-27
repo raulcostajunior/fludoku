@@ -25,7 +25,8 @@ enum PuzzleDifficulty {
   /// The maximum number of empty positions allowed for the puzzle board of the given dimension.
   int maxEmpty({int dimension = 9}) {
     assert(Board.allowedDimensions.contains(dimension));
-    return (dimension * dimension * _maxEmptyPercent).toInt();
+    final me = (dimension * dimension * _maxEmptyPercent).toInt();
+    return me > 81 ? 81 : me;
   }
 }
 
@@ -82,7 +83,7 @@ Board generateBoard(PuzzleDifficulty difficulty,
   // The positions will be optimally set to reduce the board solution set as
   // fast as possible.
   while (true) {
-    final solutions = findSolutions(genBoard, maxSolutions: 20);
+    final solutions = findSolutions(genBoard, maxSolutions: 5);
     if (solutions.length == 1) {
       // the current genBoard is a true Sudoku puzzle (only has one solution)
       break;
