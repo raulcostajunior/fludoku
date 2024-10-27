@@ -327,8 +327,14 @@ class Board {
     var strBuff = StringBuffer("\n");
     for (var lin = 0; lin < _dimension; lin++) {
       for (var col = 0; col < _dimension; col++) {
-        var value = _values[lin][col] > 0 ? _values[lin][col] : '_';
-        strBuff.write("$value ");
+        int value = _values[lin][col];
+        if (value == 0) {
+          strBuff.write(" _ ");
+        } else if (value < 10) {
+          strBuff.write(" $value ");
+        } else {
+          strBuff.write("$value ");
+        }
         if ((col + 1) % _groupSize == 0) {
           strBuff.write(" ");
         }
