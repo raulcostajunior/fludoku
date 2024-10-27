@@ -41,9 +41,10 @@ List<Board> findSolutions(final Board puzzle,
 /// If the [puzzle] is not solvable, returns [null].
 Board? findSolutionWithCandidates(
     final Board puzzle, List<int> candidatesVector) {
-  assert(candidatesVector.length == 9);
-  assert(candidatesVector.toSet().length == 9);
-  assert(candidatesVector.every((element) => element >= 1 && element <= 9));
+  assert(candidatesVector.length == puzzle.dimension);
+  assert(candidatesVector.toSet().length == puzzle.dimension);
+  assert(candidatesVector
+      .every((element) => element >= 1 && element <= puzzle.dimension));
   assert(puzzle.isSolvable);
 
   List<({int row, int col})> blanks = puzzle.blankPositions;
