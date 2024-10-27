@@ -1,4 +1,5 @@
 import 'package:fludoku/fludoku.dart';
+import 'package:fludoku/generator.dart';
 
 void main() {
   var board = Board();
@@ -17,4 +18,9 @@ void main() {
   smallBoard.setAt(row: 0, col: 0, value: 1);
   smallBoard.setAt(row: 1, col: 1, value: 2);
   print('smallBoard:$smallBoard');
+
+  var bigBoard = generateBoard(PuzzleDifficulty.hard, 16);
+  print("Big board: $bigBoard");
+  var bigBoardSolution = findSolutions(bigBoard);
+  print("Big board solution: $bigBoardSolution");
 }
