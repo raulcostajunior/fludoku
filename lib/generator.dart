@@ -5,6 +5,8 @@ import 'dart:math';
 import 'package:fixnum/fixnum.dart';
 
 enum PuzzleDifficulty {
+  // TODO: maxEmpty must be relative to the board dimension.
+  // Easy: 41.97%, Medium: 59.25%, Hard: 71.60%
   easy(maxEmpty: 34),
   medium(maxEmpty: 48),
   hard(maxEmpty: 58);
