@@ -1,6 +1,5 @@
-import 'package:fludoku/solver.dart';
-
-import 'board.dart' show Board;
+import 'solver.dart';
+import 'board.dart';
 import 'dart:math';
 import 'package:fixnum/fixnum.dart';
 

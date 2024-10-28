@@ -1,4 +1,4 @@
-import 'board.dart' show Board;
+import 'board.dart';
 
 /// Callback type for Solver to report its progress searching for solutions.
 /// [progress] is expected to be an integer between 0 and 100.

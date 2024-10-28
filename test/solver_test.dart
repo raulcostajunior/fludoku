@@ -1,5 +1,4 @@
-import 'package:fludoku/solver.dart';
-import 'package:fludoku/board.dart';
+import 'package:fludoku/fludoku.dart';
 import 'package:test/test.dart';
 
 void main() {

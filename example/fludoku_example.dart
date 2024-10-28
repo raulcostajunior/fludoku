@@ -1,5 +1,5 @@
 import 'package:fludoku/fludoku.dart';
-import 'package:fludoku/generator.dart';
+import 'package:fludoku/src/generator.dart';
 
 void main() {
   var board = Board();
