@@ -1,4 +1,4 @@
-/// Generates and solves Sudoku puzzles.
+/// Generates and solves Sudoku puzzles with dimensions 4, 9 (default), 16, or 25.
 library;
 
 export 'src/board.dart' show Board;
