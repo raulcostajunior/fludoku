@@ -140,7 +140,7 @@ class Board {
     }
   }
 
-  /// Sets the [value] at the specified [row] and [column] on the Sudoku board,
+  /// Sets the [value] at the specified [row] and [col] on the Sudoku board,
   /// if doing so doesn't invalidate the board.
   ///
   /// Returns true if the value was set, false otherwise.
