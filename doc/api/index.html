@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="fludoku API docs, for the Dart programming language.">
+  <title>fludoku - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="static-assets/github.css?v1">
+  <link rel="stylesheet" href="static-assets/styles.css?v1">
+  <link rel="icon" href="static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li class="self-crumb">fludoku package</li>
+  </ol>
+  <div class="self-name">fludoku</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <p>Dart package for generating and solving Sudoku puzzles.</p>
+<p>Puzzles with dimensions 4, 9, 16 and 25 are supported. The dimensions are the
+number of positions on each group of the puzzle.</p>
+<p>The most usual (and default) dimension, 9, generates puzzles composed of 9
+3x3 groups. Each group will have 9 positions to be filled by numbers from 1 to 9.</p>
+<p>Similarly, puzzles with dimension 16 will be composed of 16 4x4 groups. Each
+group has 16 positions to be filled by numbers from 1 to 16.</p>
+<p>At least for now, the <code>PuzzleDifficulty</code> enumeration only influences the number
+of empty positions in generated puzzles of dimensions 4 and 9. For bigger
+puzzles, if the number of empty positions isn't limited to a ceiling value
+(currently 81), the time to generate a single puzzle tends to become too long
+(in the order of several minutes).</p>
+<h2 id="tests">Tests</h2>
+<p>Unit tests are available for the <code>board</code>, <code>generator</code>, and <code>solver</code> libraries.</p>
+<p>Use either <code>dart test</code> or <code>flutter test</code> to run the tests.</p>
+<h2 id="example">Example</h2>
+<p>An usage example for the package:</p>
+<pre class="language-dart"><code class="language-dart">
+import 'package:fludoku/fludoku.dart';
+
+void main() {
+  var board = Board();
+  board.setAt(row: 0, col: 0, value: 4);
+  board.setAt(row: 3, col: 1, value: 6);
+  try {
+    board.setAt(row: 1, col: 2, value: 4);
+  } on ArgumentError catch (e) {
+    print('Exception: $e');
+  }
+  final valueSet = board.trySetAt(row: 1, col: 2, value: 4);
+  assert(valueSet == false);
+  print('board:\n$board\n');
+
+  var smallPuzzle = generateBoard(PuzzleDifficulty.hard, 4);
+  print("Small puzzle:\n$smallPuzzle\n");
+  var smallPuzzleSolution = findSolutions(smallPuzzle);
+  print("Small puzzle solution:\n$smallPuzzleSolution\n");
+
+  var puzzle = generateBoard(PuzzleDifficulty.hard, 9);
+  print("Puzzle:\n$puzzle\n");
+  var puzzleSolution = findSolutions(puzzle);
+  print("Puzzle solution:\n$puzzleSolution\n");
+
+  var bigPuzzle = generateBoard(PuzzleDifficulty.medium, 16);
+  print("Big puzzle:\n$bigPuzzle\n");
+  var bigPuzzleSolution = findSolutions(bigPuzzle);
+  print("Big puzzle solution:\n$bigPuzzleSolution\n");
+}
+
+</code></pre>
+<p>The output of the example program:</p>
+<pre class="language-dart"><code>❯ dart run example/fludoku_example.dart
+Exception: Invalid argument(s): Cannot set (1, 2) to "4" as it would invalidate the board
+board:
+
+ 4  -  -    -  -  -    -  -  -
+ -  -  -    -  -  -    -  -  -
+ -  -  -    -  -  -    -  -  -
+
+
+ -  6  -    -  -  -    -  -  -
+ -  -  -    -  -  -    -  -  -
+ -  -  -    -  -  -    -  -  -
+
+
+ -  -  -    -  -  -    -  -  -
+ -  -  -    -  -  -    -  -  -
+ -  -  -    -  -  -    -  -  -
+
+
+Small puzzle:
+
+ 3  4    1  -
+ 1  -    -  -
+
+
+ -  -    -  1
+ -  -    4  -
+
+
+Small puzzle solution:
+[
+ 3  4    1  2
+ 1  2    3  4
+
+
+ 4  3    2  1
+ 2  1    4  3
+]
+
+Puzzle:
+
+ -  8  2    4  9  6    -  -  -
+ 3  -  -    1  -  -    -  -  6
+ -  -  -    -  -  2    -  1  -
+
+
+ 8  3  -    -  -  -    5  2  -
+ -  -  -    2  -  -    1  3  8
+ 2  7  5    -  -  -    4  -  9
+
+
+ 4  -  7    6  -  5    -  -  1
+ 5  -  -    -  -  -    6  4  -
+ -  -  -    -  -  -    -  -  5
+
+
+Puzzle solution:
+[
+ 1  8  2    4  9  6    7  5  3
+ 3  5  4    1  7  8    2  9  6
+ 7  6  9    5  3  2    8  1  4
+
+
+ 8  3  1    9  6  4    5  2  7
+ 9  4  6    2  5  7    1  3  8
+ 2  7  5    8  1  3    4  6  9
+
+
+ 4  9  7    6  2  5    3  8  1
+ 5  1  3    7  8  9    6  4  2
+ 6  2  8    3  4  1    9  7  5
+]
+
+Big puzzle:
+
+ 8 12 15  3    9 11 13  1    6  - 10  7    -  5  -  4
+ - 11 13  1   14 12  -  3    8  5 16  4    6  - 10  7
+ 6  2 10  -    -  5  -  4    - 12 15  3    9 11 13  -
+ -  -  -  -    6  2 10  7    - 11 13  -    -  - 15  3
+
+
+12 14  3  -    -  9  1  -    -  -  7 10    -  -  - 16
+11  9  1  -   15 14 12  -    5  8  - 16    3 10  -  2
+ -  6  - 10    5  8  - 16   12 14  3  -    -  9  1 13
+ -  8  4  -    3 10  -  2   11  -  1 13   12 14  6 15
+
+
+15  - 14  9   12 13  - 10    1  7  -  2    -  4  8  5
+ -  - 12  -    2  - 14  9   16  4  8  5   10  7  3  6
+ -  -  -  8    -  4  3  5   15 13  - 12    2  1  9 11
+16  -  2  5    -  7  -  8    - 10  - 11    - 13 14 12
+
+
+ 3 15  -  -    -  1  - 12    7 16 11  8    4  -  5 10
+ - 13 11  -    -  3  9  -    4  -  5  6    7 16  2  8
+ 7 10  8  6    4  -  - 11   13  3  2  -    1 15  -  -
+ 4 16  -  2    7  6  8  -   10  1  -  9   13  - 11 14
+
+
+Big puzzle solution:
+[
+ 8 12 15  3    9 11 13  1    6  2 10  7   14  5 16  4
+ 9 11 13  1   14 12 15  3    8  5 16  4    6  2 10  7
+ 6  2 10  7    8  5 16  4   14 12 15  3    9 11 13  1
+14  5 16  4    6  2 10  7    9 11 13  1    8 12 15  3
+
+
+12 14  3 15   11  9  1 13    2  6  7 10    5  8  4 16
+11  9  1 13   15 14 12  6    5  8  4 16    3 10  7  2
+ 2  6  7 10    5  8  4 16   12 14  3 15   11  9  1 13
+ 5  8  4 16    3 10  7  2   11  9  1 13   12 14  6 15
+
+
+15  3 14  9   12 13 11 10    1  7  6  2   16  4  8  5
+13  1 12 11    2 15 14  9   16  4  8  5   10  7  3  6
+10  7  6  8   16  4  3  5   15 13 14 12    2  1  9 11
+16  4  2  5    1  7  6  8    3 10  9 11   15 13 14 12
+
+
+ 3 15  9 14   13  1  2 12    7 16 11  8    4  6  5 10
+ 1 13 11 12   10  3  9 14    4 15  5  6    7 16  2  8
+ 7 10  8  6    4 16  5 11   13  3  2 14    1 15 12  9
+ 4 16  5  2    7  6  8 15   10  1 12  9   13  3 11 14
+]
+
+
+fludoku on  main [!+⇡] is 󰏗 v1.0.0 via  v3.5.3 took 13s
+❯
+</code></pre>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="fludoku">
+  <span class="name"><a href="fludoku/fludoku-library.html">fludoku</a></span> 
+
+</dt>
+<dd>Generates and solves Sudoku puzzles with dimensions 4, 9 (default), 16, or 25.
+</dd>
+
+        </dl>
+      </section>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li class="self-crumb">fludoku package</li>
+</ol>
+
+
+    <h5 class="hidden-xs"><span class="package-name">fludoku</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="fludoku/fludoku-library.html">fludoku</a></li>
+</ol>
+
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+
+</main>
+
+<footer>
+  <span class="no-break">
+    fludoku
+      1.0.0
+  </span>
+
+  
+</footer>
+
+
+
+<script src="static-assets/highlight.pack.js?v1"></script>
+<script src="static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+
