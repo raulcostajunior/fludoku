@@ -13,7 +13,7 @@ At least for now, the `PuzzleDifficulty` enumeration only influences the number
 of empty positions in generated puzzles of dimensions 4 and 9. For bigger
 puzzles, if the number of empty positions isn't limited to a ceiling value
 (currently 81), the time to generate a single puzzle tends to become too long
-(in the order of minutes or even hours).
+(in the order of several minutes).
 
 ## Tests
 
@@ -28,7 +28,6 @@ An usage example for the package:
 ```dart
 
 import 'package:fludoku/fludoku.dart';
-import 'package:fludoku/generator.dart';
 
 void main() {
   var board = Board();
