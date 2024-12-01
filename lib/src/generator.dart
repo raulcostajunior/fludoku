@@ -24,28 +24,49 @@ enum PuzzleDifficulty {
   /// The maximum number of empty positions allowed for the puzzle board of the given dimension.
   int maxEmpty({int dimension = 9}) {
     assert(Board.allowedDimensions.contains(dimension));
-    final me = (dimension * dimension * _maxEmptyPercent).toInt();
-    return me > 81 ? 81 : me;
+    return (dimension * dimension * _maxEmptyPercent).toInt();
   }
 }
 
 typedef GeneratorProgress = void Function({int current, int total});
 
-Board generateBoard(PuzzleDifficulty difficulty,
-    [int dimension = 9, GeneratorProgress? progressCallback]) {
+/// Generates a new Sudoku board with the specified difficulty level and dimensions.
+///
+/// Parameters:
+/// - `level`: The difficulty level of the puzzle, which determines the maximum number of empty positions.
+/// - `dimension`: The dimension of the puzzle board, which must be one of the allowed dimensions specified in [Board.allowedDimensions]. Defaults to 9.
+/// - `timeoutSecs`: The maximum number of seconds to spend generating the board. If the generation takes longer, it will be aborted and a `String` error message will be returned.
+/// - `onProgress`: An optional callback function that will be called with the current and total steps of the generation process.
+///
+/// Returns:
+/// A record containing the generated [Board] and an optional error message as a [String]. If an error occurs, the [Board] will be `null`.
+(Board?, String?) generateBoard(
+    {PuzzleDifficulty level = PuzzleDifficulty.medium,
+    int dimension = 9,
+    int timeoutSecs = 15,
+    GeneratorProgress? onProgress}) {
   assert(Board.allowedDimensions.contains(dimension));
+  final startEpochMillis = DateTime.now().millisecondsSinceEpoch;
+  final timeoutMillis = timeoutSecs * 1000;
+  final timeoutMsg =
+      "Board generation timed out. Limit of $timeoutSecs secs reached";
+  timedout() =>
+      DateTime.now().millisecondsSinceEpoch - startEpochMillis > timeoutMillis;
   // The last step, reduction of empty positions to guarantee single solution,
   // is the one that takes longer, specially for the Hard level.
   const totalSteps = 5;
   // Step 1 -> random candidate vector generation.
   var currentStep = 1;
-  progressCallback?.call(current: currentStep, total: totalSteps);
+  onProgress?.call(current: currentStep, total: totalSteps);
   final candidatesVector = _genCandidatesVector(dimension);
+  if (timedout()) {
+    return (null, timeoutMsg);
+  }
   // Step 2 -> seeds a valid random board by initializing a random position with
   //           a random value.
   currentStep++;
   var rnd = Random();
-  progressCallback?.call(current: currentStep, total: totalSteps);
+  onProgress?.call(current: currentStep, total: totalSteps);
   Board genBoard = Board(dimension);
   genBoard.setAt(
       row: rnd.nextInt(dimension),
@@ -55,22 +76,28 @@ Board generateBoard(PuzzleDifficulty difficulty,
   //           one of the many possible solutions for a board with just one
   //           position set.
   currentStep++;
-  progressCallback?.call(current: currentStep, total: totalSteps);
-  // For this specific execution of findSolutionWithCandidates, it is safe to
-  // assume that a solution will be found: we started from a board with only
-  // one non-empty position.
-  Board solvedGenBoard =
-      findSolutionWithCandidates(genBoard, candidatesVector)!;
+  onProgress?.call(current: currentStep, total: totalSteps);
+  // timeoutSolutionMillis: the available time for _findStartingSolution to do its job
+  final timeoutSolutionMillis = timeoutSecs * 1000 -
+      (DateTime.now().millisecondsSinceEpoch - startEpochMillis);
+  var (solvedGenBoard, findStartingTimedout) =
+      _findStartingSolution(genBoard, candidatesVector, timeoutSolutionMillis);
+  if (findStartingTimedout) {
+    return (null, timeoutMsg);
+  }
   // Step 4 -> empty the maximum number of positions allowed for the difficulty
   //           level of the board being generated.
   currentStep++;
-  progressCallback?.call(current: currentStep, total: totalSteps);
-  genBoard = Board.clone(solvedGenBoard);
+  onProgress?.call(current: currentStep, total: totalSteps);
+  genBoard = Board.clone(solvedGenBoard!);
   final emptyPositions = <({int row, int col})>{};
-  final maxEmpty = difficulty.maxEmpty(dimension: genBoard.dimension);
+  final maxEmpty = level.maxEmpty(dimension: genBoard.dimension);
   while (emptyPositions.length < maxEmpty) {
     emptyPositions
         .add((row: rnd.nextInt(dimension), col: rnd.nextInt(dimension)));
+  }
+  if (timedout()) {
+    return (null, timeoutMsg);
   }
   for (final emptyPos in emptyPositions) {
     genBoard.setAt(row: emptyPos.row, col: emptyPos.col, value: 0);
@@ -78,10 +105,13 @@ Board generateBoard(PuzzleDifficulty difficulty,
   // Steps 5 -> Fill the empty positions one by one until the generated
   // board has only one solution.
   currentStep++;
-  progressCallback?.call(current: currentStep, total: totalSteps);
+  onProgress?.call(current: currentStep, total: totalSteps);
   // The positions will be optimally set to reduce the board solution set as
   // fast as possible.
   while (true) {
+    if (timedout()) {
+      return (null, timeoutMsg);
+    }
     final solutions = findSolutions(genBoard, maxSolutions: 2);
     if (solutions.length == 1) {
       // the current genBoard is a true Sudoku puzzle (only has one solution)
@@ -93,7 +123,7 @@ Board generateBoard(PuzzleDifficulty difficulty,
         col: pos % genBoard.dimension,
         value: val);
   }
-  return genBoard;
+  return (genBoard, null);
 }
 
 /// Generates a vector with candidate values for a board position in a random
@@ -112,6 +142,61 @@ List<int> _genCandidatesVector([int dimension = 9]) {
   }
   candidates.add(availableVals[0]);
   return candidates;
+}
+
+(Board? solution, bool timedOut) _findStartingSolution(
+    final Board puzzle, List<int> candidatesVector, int timeoutMillis) {
+  assert(candidatesVector.length == puzzle.dimension);
+  assert(candidatesVector.toSet().length == puzzle.dimension);
+  assert(candidatesVector
+      .every((element) => element >= 1 && element <= puzzle.dimension));
+  assert(puzzle.isSolvable);
+
+  final startEpochMillis = DateTime.now().millisecondsSinceEpoch;
+
+  List<({int row, int col})> blanks = puzzle.blankPositions;
+  Board solvedBoard =
+      Board.clone(puzzle); // puzzle is the starting poin for the solvedBoard
+  int currCellPos = 0;
+  bool unsolvable = false;
+  while (currCellPos < blanks.length && !unsolvable) {
+    if (DateTime.now().millisecondsSinceEpoch - startEpochMillis >
+        timeoutMillis) {
+      return (null, true);
+    }
+    var currCell = blanks[currCellPos];
+    var currCellValue = solvedBoard.getAt(row: currCell.row, col: currCell.col);
+    int candidatesIdx = 0;
+    if (currCellValue != 0) {
+      // We're backtracking, so we must start with the next candidate value
+      candidatesIdx = candidatesVector.indexOf(currCellValue) + 1;
+    }
+    bool currCellSolved = false;
+    while (!currCellSolved && candidatesIdx < candidatesVector.length) {
+      try {
+        solvedBoard.setAt(
+            row: currCell.row,
+            col: currCell.col,
+            value: candidatesVector[candidatesIdx]);
+        currCellSolved = true;
+      } on ArgumentError {
+        // The current candidate value would invalidate the board, try the next
+        candidatesIdx++;
+      }
+    }
+    if (currCellSolved) {
+      currCellPos++;
+    } else {
+      // There was no solution for the next cell - we have to roll back to the
+      // previous cell
+      if (currCellPos > 0) {
+        // Resets the current cell before going back to the previous one
+        solvedBoard.setAt(row: currCell.row, col: currCell.col, value: 0);
+        currCellPos--;
+      }
+    }
+  }
+  return (solvedBoard, false);
 }
 
 /// Given a [boards] set of Boards, finds the position where the difference

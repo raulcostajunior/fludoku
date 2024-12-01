@@ -42,20 +42,28 @@ void main() {
   assert(valueSet == false);
   print('board:\n$board\n');
 
-  var smallPuzzle = generateBoard(PuzzleDifficulty.hard, 4);
-  print("Small puzzle:\n$smallPuzzle\n");
-  var smallPuzzleSolution = findSolutions(smallPuzzle);
-  print("Small puzzle solution:\n$smallPuzzleSolution\n");
+  final (smallPuzzle, _) =
+      generateBoard(level: PuzzleDifficulty.hard, dimension: 4);
+  if (smallPuzzle != null) {
+    print("Small puzzle:\n$smallPuzzle\n");
+    var smallPuzzleSolution = findSolutions(smallPuzzle);
+    print("Small puzzle solution:\n$smallPuzzleSolution\n");
+  }
 
-  var puzzle = generateBoard(PuzzleDifficulty.hard, 9);
-  print("Puzzle:\n$puzzle\n");
-  var puzzleSolution = findSolutions(puzzle);
-  print("Puzzle solution:\n$puzzleSolution\n");
+  final (puzzle, _) = generateBoard(level: PuzzleDifficulty.hard, dimension: 9);
+  if (puzzle != null) {
+    print("Puzzle:\n$puzzle\n");
+    var puzzleSolution = findSolutions(puzzle);
+    print("Puzzle solution:\n$puzzleSolution\n");
+  }
 
-  var bigPuzzle = generateBoard(PuzzleDifficulty.medium, 16);
-  print("Big puzzle:\n$bigPuzzle\n");
-  var bigPuzzleSolution = findSolutions(bigPuzzle);
-  print("Big puzzle solution:\n$bigPuzzleSolution\n");
+  final (bigPuzzle, _) =
+      generateBoard(level: PuzzleDifficulty.medium, dimension: 16);
+  if (bigPuzzle != null) {
+    print("Big puzzle:\n$bigPuzzle\n");
+    var bigPuzzleSolution = findSolutions(bigPuzzle);
+    print("Big puzzle solution:\n$bigPuzzleSolution\n");
+  }
 }
 
 ```
