@@ -21,5 +21,12 @@ void main() {
         }
       });
     }
+
+    test("Puzzle generation with a too low timeout times out", () {
+      final (puzzle, timeoutMsg) = generateBoard(
+          level: PuzzleDifficulty.hard, dimension: 25, timeoutSecs: 1);
+      expect(puzzle, null);
+      expect(timeoutMsg?.isNotEmpty, true);
+    });
   });
 }

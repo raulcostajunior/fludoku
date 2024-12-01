@@ -77,19 +77,19 @@ typedef GeneratorProgress = void Function({int current, int total});
   //           position set.
   currentStep++;
   onProgress?.call(current: currentStep, total: totalSteps);
-  // For this specific execution of findSolutionWithCandidates, it is safe to
-  // assume that a solution will be found: we started from a board with only
-  // one non-empty position.
-  Board solvedGenBoard =
-      findSolutionWithCandidates(genBoard, candidatesVector)!;
-  if (timedout()) {
+  // timeoutSolutionMillis: the available time for _findStartingSolution to do its job
+  final timeoutSolutionMillis = timeoutSecs * 1000 -
+      (DateTime.now().millisecondsSinceEpoch - startEpochMillis);
+  var (solvedGenBoard, findStartingTimedout) =
+      _findStartingSolution(genBoard, candidatesVector, timeoutSolutionMillis);
+  if (findStartingTimedout) {
     return (null, timeoutMsg);
   }
   // Step 4 -> empty the maximum number of positions allowed for the difficulty
   //           level of the board being generated.
   currentStep++;
   onProgress?.call(current: currentStep, total: totalSteps);
-  genBoard = Board.clone(solvedGenBoard);
+  genBoard = Board.clone(solvedGenBoard!);
   final emptyPositions = <({int row, int col})>{};
   final maxEmpty = level.maxEmpty(dimension: genBoard.dimension);
   while (emptyPositions.length < maxEmpty) {
@@ -142,6 +142,61 @@ List<int> _genCandidatesVector([int dimension = 9]) {
   }
   candidates.add(availableVals[0]);
   return candidates;
+}
+
+(Board? solution, bool timedOut) _findStartingSolution(
+    final Board puzzle, List<int> candidatesVector, int timeoutMillis) {
+  assert(candidatesVector.length == puzzle.dimension);
+  assert(candidatesVector.toSet().length == puzzle.dimension);
+  assert(candidatesVector
+      .every((element) => element >= 1 && element <= puzzle.dimension));
+  assert(puzzle.isSolvable);
+
+  final startEpochMillis = DateTime.now().millisecondsSinceEpoch;
+
+  List<({int row, int col})> blanks = puzzle.blankPositions;
+  Board solvedBoard =
+      Board.clone(puzzle); // puzzle is the starting poin for the solvedBoard
+  int currCellPos = 0;
+  bool unsolvable = false;
+  while (currCellPos < blanks.length && !unsolvable) {
+    if (DateTime.now().millisecondsSinceEpoch - startEpochMillis >
+        timeoutMillis) {
+      return (null, true);
+    }
+    var currCell = blanks[currCellPos];
+    var currCellValue = solvedBoard.getAt(row: currCell.row, col: currCell.col);
+    int candidatesIdx = 0;
+    if (currCellValue != 0) {
+      // We're backtracking, so we must start with the next candidate value
+      candidatesIdx = candidatesVector.indexOf(currCellValue) + 1;
+    }
+    bool currCellSolved = false;
+    while (!currCellSolved && candidatesIdx < candidatesVector.length) {
+      try {
+        solvedBoard.setAt(
+            row: currCell.row,
+            col: currCell.col,
+            value: candidatesVector[candidatesIdx]);
+        currCellSolved = true;
+      } on ArgumentError {
+        // The current candidate value would invalidate the board, try the next
+        candidatesIdx++;
+      }
+    }
+    if (currCellSolved) {
+      currCellPos++;
+    } else {
+      // There was no solution for the next cell - we have to roll back to the
+      // previous cell
+      if (currCellPos > 0) {
+        // Resets the current cell before going back to the previous one
+        solvedBoard.setAt(row: currCell.row, col: currCell.col, value: 0);
+        currCellPos--;
+      }
+    }
+  }
+  return (solvedBoard, false);
 }
 
 /// Given a [boards] set of Boards, finds the position where the difference
