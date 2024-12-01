@@ -109,10 +109,10 @@ typedef GeneratorProgress = void Function({int current, int total});
   // The positions will be optimally set to reduce the board solution set as
   // fast as possible.
   while (true) {
-    final solutions = findSolutions(genBoard, maxSolutions: 2);
     if (timedout()) {
       return (null, timeoutMsg);
     }
+    final solutions = findSolutions(genBoard, maxSolutions: 2);
     if (solutions.length == 1) {
       // the current genBoard is a true Sudoku puzzle (only has one solution)
       break;
