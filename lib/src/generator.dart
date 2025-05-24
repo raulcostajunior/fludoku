@@ -158,8 +158,7 @@ List<int> _genCandidatesVector([int dimension = 9]) {
   Board solvedBoard =
       Board.clone(puzzle); // puzzle is the starting poin for the solvedBoard
   int currCellPos = 0;
-  bool unsolvable = false;
-  while (currCellPos < blanks.length && !unsolvable) {
+  while (currCellPos < blanks.length) {
     if (DateTime.now().millisecondsSinceEpoch - startEpochMillis >
         timeoutMillis) {
       return (null, true);
