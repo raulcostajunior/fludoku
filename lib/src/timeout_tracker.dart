@@ -3,11 +3,7 @@ class TimeoutTracker {
   late int _startTimeMillis;
 
   TimeoutTracker(this._timeoutMillis, {int? startTimeMillis}) {
-    if (startTimeMillis != null) {
-      _startTimeMillis = startTimeMillis;
-    } else {
-      _startTimeMillis = DateTime.now().millisecondsSinceEpoch;
-    }
+    _startTimeMillis = startTimeMillis ?? DateTime.now().millisecondsSinceEpoch;
   }
 
   bool get timedout =>
