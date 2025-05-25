@@ -1,10 +1,12 @@
 import 'board.dart';
+import 'timeout_tracker.dart';
 
 /// Callback type for Solver to report its progress searching for solutions.
 /// [progress] is expected to be an integer between 0 and 100.
 typedef FindSolutionsProgress = void Function(int progress);
 
-/// Finds solution(s) for a given [puzzle] board.
+/// Finds solution(s) for a given [puzzle] board within [timeoutMillis]
+/// interval that defaults to one day.
 ///
 /// If defined, [progressCallback] will be called to report progress.
 /// As [puzzle] is not guaranteed to be a "canonical" Sudoku board, which must
@@ -13,9 +15,13 @@ typedef FindSolutionsProgress = void Function(int progress);
 ///
 /// If [puzzle] is not a solvable board, an [ArgumentError] is thrown. If
 /// [maxSolutions] is less than 1, an [ArgumentError] is thrown.
+///
+/// If a timeout [tracker] is provided, a [TimeoutException] is thrown when the
+/// timeout for the operation to complete elapses before the solutions are found
 List<Board> findSolutions(final Board puzzle,
     {final FindSolutionsProgress? progressCallback,
-    final int maxSolutions = 1}) {
+    final int maxSolutions = 1,
+    final TimeoutTracker? tracker}) {
   // Validate the parameters
   if (maxSolutions < 1) {
     throw ArgumentError('maxSolutions must be at least 1');
@@ -28,7 +34,7 @@ List<Board> findSolutions(final Board puzzle,
   }
 
   var solutions = <Board>[];
-  _findSolutions(puzzle, progressCallback, maxSolutions, solutions);
+  _findSolutions(puzzle, progressCallback, maxSolutions, solutions, tracker);
 
   return solutions;
 }
@@ -38,6 +44,7 @@ void _findSolutions(
     final FindSolutionsProgress? progressCallback,
     final int maxSolutions,
     List<Board> solutions,
+    final TimeoutTracker? tracker,
     [_FindSolutionsContext context = (level: 0, progress: 0)]) {
   if (solutions.length >= maxSolutions) {
     // The maximum number of solutions has been found. No need to search
@@ -48,6 +55,10 @@ void _findSolutions(
     // The board is a solution. No need to search further.
     solutions.add(board);
     return;
+  }
+
+  if (tracker != null && tracker.timedout) {
+    throw ("Operation timedout");
   }
 
   var blanks = board.blankPositions;
@@ -97,7 +108,7 @@ void _findSolutions(
         }
       }
       _findSolutions(nextBoard, progressCallback, maxSolutions, solutions,
-          (level: context.level + 1, progress: newProgress));
+          tracker, (level: context.level + 1, progress: newProgress));
     }
   }
   if (context.level == 0) {

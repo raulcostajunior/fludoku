@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'solver.dart';
 import 'board.dart';
 import 'dart:math';
 import 'package:fixnum/fixnum.dart';
+
+import 'timeout_tracker.dart';
 
 enum PuzzleDifficulty {
   easy(maxEmptyPercent: 0.4197),
@@ -46,12 +50,9 @@ typedef GeneratorProgress = void Function({int current, int total});
     int timeoutSecs = 15,
     GeneratorProgress? onProgress}) {
   assert(Board.allowedDimensions.contains(dimension));
-  final startEpochMillis = DateTime.now().millisecondsSinceEpoch;
-  final timeoutMillis = timeoutSecs * 1000;
+  final tracker = TimeoutTracker(timeoutSecs * 1000);
   final timeoutMsg =
       "Board generation timed out. Limit of $timeoutSecs secs reached";
-  timedout() =>
-      DateTime.now().millisecondsSinceEpoch - startEpochMillis > timeoutMillis;
   // The last step, reduction of empty positions to guarantee single solution,
   // is the one that takes longer, specially for the Hard level.
   const totalSteps = 5;
@@ -59,7 +60,7 @@ typedef GeneratorProgress = void Function({int current, int total});
   var currentStep = 1;
   onProgress?.call(current: currentStep, total: totalSteps);
   final candidatesVector = _genCandidatesVector(dimension);
-  if (timedout()) {
+  if (tracker.timedout) {
     return (null, timeoutMsg);
   }
   // Step 2 -> seeds a valid random board by initializing a random position with
@@ -77,11 +78,8 @@ typedef GeneratorProgress = void Function({int current, int total});
   //           position set.
   currentStep++;
   onProgress?.call(current: currentStep, total: totalSteps);
-  // timeoutSolutionMillis: the available time for _findStartingSolution to do its job
-  final timeoutSolutionMillis = timeoutSecs * 1000 -
-      (DateTime.now().millisecondsSinceEpoch - startEpochMillis);
   var (solvedGenBoard, findStartingTimedout) =
-      _findStartingSolution(genBoard, candidatesVector, timeoutSolutionMillis);
+      _findStartingSolution(genBoard, candidatesVector, tracker);
   if (findStartingTimedout) {
     return (null, timeoutMsg);
   }
@@ -96,7 +94,7 @@ typedef GeneratorProgress = void Function({int current, int total});
     emptyPositions
         .add((row: rnd.nextInt(dimension), col: rnd.nextInt(dimension)));
   }
-  if (timedout()) {
+  if (tracker.timedout) {
     return (null, timeoutMsg);
   }
   for (final emptyPos in emptyPositions) {
@@ -109,19 +107,24 @@ typedef GeneratorProgress = void Function({int current, int total});
   // The positions will be optimally set to reduce the board solution set as
   // fast as possible.
   while (true) {
-    if (timedout()) {
+    if (tracker.timedout) {
       return (null, timeoutMsg);
     }
-    final solutions = findSolutions(genBoard, maxSolutions: 2);
-    if (solutions.length == 1) {
-      // the current genBoard is a true Sudoku puzzle (only has one solution)
-      break;
+    try {
+      final solutions =
+          findSolutions(genBoard, maxSolutions: 2, tracker: tracker);
+      if (solutions.length == 1) {
+        // the current genBoard is a true Sudoku puzzle (only has one solution)
+        break;
+      }
+      final (val, pos) = _getLessFrequentVariation(solutions);
+      genBoard.setAt(
+          row: pos ~/ genBoard.dimension,
+          col: pos % genBoard.dimension,
+          value: val);
+    } on TimeoutException {
+      return (null, timeoutMsg);
     }
-    final (val, pos) = _getLessFrequentVariation(solutions);
-    genBoard.setAt(
-        row: pos ~/ genBoard.dimension,
-        col: pos % genBoard.dimension,
-        value: val);
   }
   return (genBoard, null);
 }
@@ -144,23 +147,20 @@ List<int> _genCandidatesVector([int dimension = 9]) {
   return candidates;
 }
 
-(Board? solution, bool timedOut) _findStartingSolution(
-    final Board puzzle, List<int> candidatesVector, int timeoutMillis) {
+(Board? solution, bool timedOut) _findStartingSolution(final Board puzzle,
+    List<int> candidatesVector, final TimeoutTracker tracker) {
   assert(candidatesVector.length == puzzle.dimension);
   assert(candidatesVector.toSet().length == puzzle.dimension);
   assert(candidatesVector
       .every((element) => element >= 1 && element <= puzzle.dimension));
   assert(puzzle.isSolvable);
 
-  final startEpochMillis = DateTime.now().millisecondsSinceEpoch;
-
   List<({int row, int col})> blanks = puzzle.blankPositions;
   Board solvedBoard =
       Board.clone(puzzle); // puzzle is the starting poin for the solvedBoard
   int currCellPos = 0;
   while (currCellPos < blanks.length) {
-    if (DateTime.now().millisecondsSinceEpoch - startEpochMillis >
-        timeoutMillis) {
+    if (tracker.timedout) {
       return (null, true);
     }
     var currCell = blanks[currCellPos];
