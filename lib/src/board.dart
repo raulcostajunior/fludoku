@@ -1,6 +1,8 @@
 import 'dart:math';
 
-/// A Sudoku puzzle Board.
+/// A board that can be a Sudoku Board (with only one possible solution) or not.
+/// Any non-zero value in the set of initial values for the board becomes a
+/// read-only position, and as such, cannot be modified.
 class Board {
   static const allowedDimensions = [4, 9, 16, 25];
   final int _dimension;
@@ -17,6 +19,9 @@ class Board {
     _values = List.generate(_dimension,
         (row) => List.generate(_dimension, (col) => 0, growable: false),
         growable: false);
+    // An empty board can have all its positions modified - it is surely not a Puzzle
+    // (with one solution)
+    _readOnlyPositions = [];
   }
 
   Board.clone(final Board other) : _dimension = other._dimension {
@@ -27,6 +32,9 @@ class Board {
         (row) => List.generate(_dimension, (col) => other._values[row][col],
             growable: false),
         growable: false);
+    // All the non-zero valued positions of the board being constructed are
+    // considered to be read-only positions (pre-filled positions of a puzzle)
+    _initReadOnlyPositions();
   }
 
   Board.from(final List<List<int>> values)
@@ -39,6 +47,20 @@ class Board {
         (row) => List.generate(values.length, (col) => values[row][col],
             growable: false),
         growable: false);
+    // All the non-zero valued positions of the board being constructed are
+    // considered to be read-only positions (pre-filled positions of a puzzle)
+    _initReadOnlyPositions();
+  }
+
+  void _initReadOnlyPositions() {
+    _readOnlyPositions = [];
+    for (var row = 0; row < _dimension; row++) {
+      for (var col = 0; col < _dimension; col++) {
+        if (_values[row][col] != 0) {
+          _readOnlyPositions.add((row: row, col: col));
+        }
+      }
+    }
   }
 
   //#endregion
@@ -70,6 +92,11 @@ class Board {
     }
     return blanks;
   }
+
+  /// Returns a list with the read-only positions of the board. For boards that
+  /// are Sudoku puzzles the read-only positions are the pre-filled positions
+  /// that the user cannot change.
+  List<({int row, int col})> get readOnlyPositions => _readOnlyPositions;
 
   /// Returns a list with the invalid positions of the board.
   List<({int row, int col})> get invalidPositions => _getInvalidPositions();
@@ -122,11 +149,16 @@ class Board {
   /// If the [row] or [col] is out of range, a [RangeError] is thrown.
   /// If the value is out of range, a [RangeError] is thrown.
   /// If setting the [value] would invalidate the board, an [ArgumentError] is thrown.
+  /// If the [row] and [col] specify a read-only position of the board, an
+  /// [ArgumentError] is thrown.
   void setAt({required int row, required int col, required int value}) {
     _checkRowCol(row, col);
     if (value < 0 || value > _maxValue) {
       throw RangeError(
           'value must be between 0 and $_maxValue. 0 is the blank value');
+    }
+    if (_readOnlyPositions.contains((row: row, col: col))) {
+      throw ArgumentError('Position ($row, $col) is read-only; cannot be set');
     }
     var boardWithValue = Board.clone(this);
     boardWithValue._values[row][col] = value;
@@ -185,6 +217,7 @@ class Board {
   }
 
   late final List<List<int>> _values;
+  late final List<({int row, int col})> _readOnlyPositions;
 
   void _checkRowCol(int row, int col) {
     if (row < 0 || row >= _dimension) {

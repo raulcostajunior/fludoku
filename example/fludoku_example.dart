@@ -14,14 +14,15 @@ void main() {
   print('board:\n$board\n');
 
   final (smallPuzzle, _) =
-      generateBoard(level: PuzzleDifficulty.hard, dimension: 4);
+      generateSudokuBoard(level: PuzzleDifficulty.hard, dimension: 4);
   if (smallPuzzle != null) {
     print("Small puzzle:\n$smallPuzzle\n");
     var smallPuzzleSolution = findSolutions(smallPuzzle);
     print("Small puzzle solution:\n$smallPuzzleSolution\n");
   }
 
-  final (puzzle, _) = generateBoard(level: PuzzleDifficulty.hard, dimension: 9);
+  final (puzzle, _) =
+      generateSudokuBoard(level: PuzzleDifficulty.hard, dimension: 9);
   if (puzzle != null) {
     print("Puzzle:\n$puzzle\n");
     var puzzleSolution = findSolutions(puzzle);
@@ -29,7 +30,7 @@ void main() {
   }
 
   final (bigPuzzle, _) =
-      generateBoard(level: PuzzleDifficulty.medium, dimension: 16);
+      generateSudokuBoard(level: PuzzleDifficulty.medium, dimension: 16);
   if (bigPuzzle != null) {
     print("Big puzzle:\n$bigPuzzle\n");
     var bigPuzzleSolution = findSolutions(bigPuzzle);

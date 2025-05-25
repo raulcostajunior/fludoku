@@ -82,10 +82,8 @@ void main() {
     });
 
     test("Board with blank position isn't complete", () {
-      var boardWithBlank = Board.clone(invalidBoardValueRange);
-      // Turn invalidBoardValueRange into a valid Board with a blank position
-      boardWithBlank.setAt(row: 0, col: 1, value: 0);
-      expect(boardWithBlank.blankPositions.length, 1);
+      var boardWithBlank = Board.clone(boardWithBlanks);
+      expect(boardWithBlank.blankPositions.length, 2);
       expect(boardWithBlank.isValid, true);
       expect(boardWithBlank.isComplete, false);
     });
@@ -169,6 +167,16 @@ void main() {
           throwsA(isA<ArgumentError>()));
       // Attempt again, without throwing an exception.
       expect(board.trySetAt(row: 0, col: 4, value: 6), false);
+    });
+
+    test("Set value of a read-only position of the board is rejected", () {
+      var board = Board.clone(boardWithBlanks);
+      // Position (0,0) of the board is defined to a non-zero value, and thus
+      // is read-only
+      expect(() => board.setAt(row: 0, col: 0, value: 6),
+          throwsA(isA<ArgumentError>()));
+      // Attempt again, without throwing an exception.
+      expect(board.trySetAt(row: 0, col: 0, value: 6), false);
     });
 
     test("Properly set value is accepted", () {

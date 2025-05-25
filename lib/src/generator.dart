@@ -34,7 +34,7 @@ enum PuzzleDifficulty {
 
 typedef GeneratorProgress = void Function({int current, int total});
 
-/// Generates a new Sudoku board with the specified difficulty level and dimensions.
+/// Generates a new Sudoku board with the specified difficulty level and dimensions. A Sudoku board is a puzzle that is guaranteed to have only one solution.
 ///
 /// Parameters:
 /// - `level`: The difficulty level of the puzzle, which determines the maximum number of empty positions.
@@ -43,8 +43,8 @@ typedef GeneratorProgress = void Function({int current, int total});
 /// - `onProgress`: An optional callback function that will be called with the current and total steps of the generation process.
 ///
 /// Returns:
-/// A record containing the generated [Board] and an optional error message as a [String]. If an error occurs, the [Board] will be `null`.
-(Board?, String?) generateBoard(
+/// A record containing the generated puzzle [Board] and an optional error message as a [String]. If an error occurs, the [Board] will be `null`.
+(Board?, String?) generateSudokuBoard(
     {PuzzleDifficulty level = PuzzleDifficulty.medium,
     int dimension = 9,
     int timeoutSecs = 15,
@@ -87,7 +87,17 @@ typedef GeneratorProgress = void Function({int current, int total});
   //           level of the board being generated.
   currentStep++;
   onProgress?.call(current: currentStep, total: totalSteps);
-  genBoard = Board.clone(solvedGenBoard!);
+  // Update the genBoard from the solvedGenBoard. NOTE: as the genBoard started
+  // its life as an all empty board (and hence with no read-only positions), it
+  // is important that the update happens by setting each value instead of by
+  // replacing it with a clone of the solvedGenBoard to keep its set of read-only
+  // positions empty.
+  for (int row = 0; row < genBoard.dimension; row++) {
+    for (int col = 0; col < genBoard.dimension; col++) {
+      genBoard.setAt(
+          row: row, col: col, value: solvedGenBoard!.getAt(row: row, col: col));
+    }
+  }
   final emptyPositions = <({int row, int col})>{};
   final maxEmpty = level.maxEmpty(dimension: genBoard.dimension);
   while (emptyPositions.length < maxEmpty) {
@@ -126,7 +136,10 @@ typedef GeneratorProgress = void Function({int current, int total});
       return (null, timeoutMsg);
     }
   }
-  return (genBoard, null);
+  // NOTE: For the read-only positions of the generated board to be properly
+  //       initialized, a clone of it is returned. During the construction of
+  //       the clone, the read-only positions are initialized.
+  return (Board.clone(genBoard), null);
 }
 
 /// Generates a vector with candidate values for a board position in a random
