@@ -3,5 +3,5 @@ library;
 
 export 'src/board.dart' show Board;
 export 'src/generator.dart'
-    show generateSudokuBoard, GeneratorProgress, PuzzleDifficulty;
+    show generateSudokuPuzzle, GeneratorProgress, PuzzleDifficulty;
 export 'src/solver.dart' show findSolutions, FindSolutionsProgress;

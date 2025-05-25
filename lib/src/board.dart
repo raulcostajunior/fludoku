@@ -1,6 +1,6 @@
 import 'dart:math';
 
-/// A board that can be a Sudoku Board (with only one possible solution) or not.
+/// A board that can be a Sudoku Puzzle (with only one possible solution) or not.
 /// Any non-zero value in the set of initial values for the board becomes a
 /// read-only position, and as such, cannot be modified.
 class Board {

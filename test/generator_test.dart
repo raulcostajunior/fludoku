@@ -7,7 +7,7 @@ void main() {
       test(
           "A generated ${level.name} puzzle has 1 solution and respects max blanks",
           () {
-        final (puzzle, timeoutMsg) = generateSudokuBoard(level: level);
+        final (puzzle, timeoutMsg) = generateSudokuPuzzle(level: level);
         if (puzzle != null) {
           expect(puzzle.isSolvable, true);
           expect(puzzle.isValid, true);
@@ -23,7 +23,7 @@ void main() {
     }
 
     test("Puzzle generation with a too low timeout times out", () {
-      final (puzzle, timeoutMsg) = generateSudokuBoard(
+      final (puzzle, timeoutMsg) = generateSudokuPuzzle(
           level: PuzzleDifficulty.hard, dimension: 25, timeoutSecs: 1);
       expect(puzzle, null);
       expect(timeoutMsg?.isNotEmpty, true);

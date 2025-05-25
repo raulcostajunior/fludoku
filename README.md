@@ -1,19 +1,19 @@
-Dart package for generating and solving Sudoku puzzles.
+Dart package for generating and solving Sudoku puzzles - Sudoku boards that have
+only one solutions.
 
-Puzzles with dimensions 4, 9, 16 and 25 are supported. The dimensions are the
-number of positions on each group of the puzzle.
+Boards with dimensions 4, 9, 16 and 25 are supported. The dimensions are the
+number of positions on each group of the board.
 
-The most usual (and default) dimension, 9, generates puzzles composed of 9
-3x3 groups. Each group will have 9 positions to be filled by numbers from 1 to 9.
+The most usual (and default) dimension, 9, generates boards composed of 9
+3x3 groups. Each group will have 9 positions fillable with numbers from 1 to 9.
 
-Similarly, puzzles with dimension 16 will be composed of 16 4x4 groups. Each
+Similarly, boards with dimension 16 will be composed of 16 4x4 groups. Each
 group has 16 positions to be filled by numbers from 1 to 16.
 
-At least for now, the `PuzzleDifficulty` enumeration only influences the number
-of empty positions in generated puzzles of dimensions 4 and 9. For bigger
-puzzles, if the number of empty positions isn't limited to a ceiling value
-(currently 81), the time to generate a single puzzle tends to become too long
-(in the order of several minutes).
+The generation of Sudoku puzzles of dimensions 16 and 25, specially when
+`PuzzleDifficulty` is set to `medium` or `high`, can be a lenghty process, taking
+several minutes (or even hours). A timeout argument, in seconds, can be thus
+specified to the `generateSudokuPuzzle` function. The default timeout is 15 seconds.
 
 ## Tests
 

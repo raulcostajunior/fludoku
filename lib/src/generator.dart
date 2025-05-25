@@ -34,7 +34,7 @@ enum PuzzleDifficulty {
 
 typedef GeneratorProgress = void Function({int current, int total});
 
-/// Generates a new Sudoku board with the specified difficulty level and dimensions. A Sudoku board is a puzzle that is guaranteed to have only one solution.
+/// Generates a new Sudoku puzzle with the specified difficulty level and dimensions. A Sudoku board is a puzzle when it is guaranteed to have only one solution.
 ///
 /// Parameters:
 /// - `level`: The difficulty level of the puzzle, which determines the maximum number of empty positions.
@@ -44,7 +44,7 @@ typedef GeneratorProgress = void Function({int current, int total});
 ///
 /// Returns:
 /// A record containing the generated puzzle [Board] and an optional error message as a [String]. If an error occurs, the [Board] will be `null`.
-(Board?, String?) generateSudokuBoard(
+(Board?, String?) generateSudokuPuzzle(
     {PuzzleDifficulty level = PuzzleDifficulty.medium,
     int dimension = 9,
     int timeoutSecs = 15,
