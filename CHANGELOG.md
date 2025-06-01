@@ -1,3 +1,10 @@
+## 4.0.0
+
+- `Board.from` constructor renamed to `Board.withValues`.
+- `Board.clone` now preserves the `readOnlyPositions` of the cloned board, instead of deriving the `readOnlyPositions` from the original's board list of values at the time of the cloning operation. `Board.withValues` retains the same behavior of its previous `Board.from` form: initialize `readOnlyPositions` from the non-zero values in the list.
+- Added a read-only property that returns the values in the board as a list of list of ints. The new property makes it easy to create a board with the same values of another board, but with a fresh `readOnlyPositions`.
+- Extended test cases to cover the differences in the initialization of read-only positions between the constructors.
+
 ## 3.0.0
 
 - `generateBoard` function renamed to `generateSudokuPuzzle` to better reflect what it generates. A Sudoku puzzle is a board that is known to have only 1 solution. In addition, the use of terms `board` and `puzzle` in the documentation is more accurate than in the previous version.

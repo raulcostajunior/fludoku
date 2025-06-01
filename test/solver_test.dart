@@ -2,7 +2,7 @@ import 'package:fludoku/fludoku.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final unsolvableBoard = Board.from([
+  final unsolvableBoard = Board.withValues([
     [5, 1, 6, 8, 4, 0, 7, 3, 2],
     [3, 0, 7, 6, 0, 5, 0, 0, 0],
     [8, 0, 9, 7, 0, 0, 0, 6, 5],
@@ -14,7 +14,7 @@ void main() {
     [7, 9, 1, 0, 5, 0, 6, 0, 8],
   ]);
 
-  final invalidBoard = Board.from([
+  final invalidBoard = Board.withValues([
     // 2 is repeated across the first line and the last column.
     [2, 9, 5, 7, 4, 3, 8, 6, 2],
     [4, 3, 1, 8, 6, 5, 9, 2, 7],
@@ -27,7 +27,7 @@ void main() {
     [1, 5, 4, 9, 3, 8, 6, 7, 2],
   ]);
 
-  final solvableHardOneSolution = Board.from([
+  final solvableHardOneSolution = Board.withValues([
     [0, 0, 6, 0, 0, 8, 5, 0, 0],
     [0, 0, 0, 0, 7, 0, 6, 1, 3],
     [0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -39,7 +39,7 @@ void main() {
     [3, 0, 0, 1, 0, 0, 0, 6, 0],
   ]);
 
-  final solvableOneSolution = Board.from([
+  final solvableOneSolution = Board.withValues([
     [2, 9, 5, 7, 4, 3, 8, 6, 1],
     [4, 3, 1, 8, 6, 5, 9, 2, 7],
     [8, 7, 6, 1, 9, 2, 5, 4, 3],
@@ -51,7 +51,7 @@ void main() {
     [1, 5, 4, 9, 3, 8, 6, 7, 2],
   ]);
 
-  final solvableThreeSolutions = Board.from([
+  final solvableThreeSolutions = Board.withValues([
     [0, 7, 5, 8, 4, 6, 1, 0, 0],
     [8, 4, 0, 0, 0, 0, 9, 7, 0],
     [0, 0, 0, 0, 0, 0, 0, 4, 0],
@@ -63,7 +63,7 @@ void main() {
     [0, 1, 2, 6, 5, 9, 0, 0, 0],
   ]);
 
-  final solvableTooManySolutions = Board.from([
+  final solvableTooManySolutions = Board.withValues([
     // Almost all positions blank
     [0, 0, 0, 0, 0, 4, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],

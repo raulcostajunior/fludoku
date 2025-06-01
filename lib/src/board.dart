@@ -11,6 +11,7 @@ class Board {
 
   //#region Constructors
 
+  /// Constructs an empty board - all the positions set to zero.
   Board([int dimension = 9])
       : assert(Board.allowedDimensions.contains(dimension)),
         _dimension = dimension {
@@ -24,6 +25,8 @@ class Board {
     _readOnlyPositions = [];
   }
 
+  /// Clones a board. Preserves the readOnlyPositions from the original board
+  /// - which were defined when the original board was constructed.
   Board.clone(final Board other) : _dimension = other._dimension {
     _groupSize = other._groupSize;
     _maxValue = other._maxValue;
@@ -32,12 +35,14 @@ class Board {
         (row) => List.generate(_dimension, (col) => other._values[row][col],
             growable: false),
         growable: false);
-    // All the non-zero valued positions of the board being constructed are
-    // considered to be read-only positions (pre-filled positions of a puzzle)
-    _initReadOnlyPositions();
+    // The clone has the same read-only positions as the original
+    _readOnlyPositions = List.from(other._readOnlyPositions);
   }
 
-  Board.from(final List<List<int>> values)
+  // Constructs a board from its list of values. The read-only positions of the
+  // constructed board are defined from the given values (the read-only
+  // positions are those with non-zero values).
+  Board.withValues(final List<List<int>> values)
       : assert(Board.allowedDimensions.contains(values.length)),
         _dimension = values.length {
     _groupSize = sqrt(_dimension).toInt();
@@ -49,10 +54,6 @@ class Board {
         growable: false);
     // All the non-zero valued positions of the board being constructed are
     // considered to be read-only positions (pre-filled positions of a puzzle)
-    _initReadOnlyPositions();
-  }
-
-  void _initReadOnlyPositions() {
     _readOnlyPositions = [];
     for (var row = 0; row < _dimension; row++) {
       for (var col = 0; col < _dimension; col++) {
@@ -96,7 +97,11 @@ class Board {
   /// Returns a list with the read-only positions of the board. For boards that
   /// are Sudoku puzzles the read-only positions are the pre-filled positions
   /// that the user cannot change.
-  List<({int row, int col})> get readOnlyPositions => _readOnlyPositions;
+  List<({int row, int col})> get readOnlyPositions =>
+      // NOTE: the returned list of readOnlyPositions must be immutable - if not
+      // the guarantee that read-only positions can only be defined at board
+      // construction time would be violated.
+      List<({int row, int col})>.unmodifiable(_readOnlyPositions);
 
   /// Returns a list with the invalid positions of the board.
   List<({int row, int col})> get invalidPositions => _getInvalidPositions();
@@ -106,6 +111,17 @@ class Board {
 
   /// Returns true if the Sudoku board is solvable (not empty and valid but yet not complete).
   bool get isSolvable => !isEmpty && isValid && !isComplete;
+
+  /// Returns the values of the board as a list of lists (the nested lists are for each row).
+  List<List<int>> get values {
+    // NOTE: A copy of the internal list of values of the board is returned to avoid
+    //       external bypassing of the checks performed by the setAt method.
+    return List.generate(
+        _dimension,
+        (row) => List.generate(_dimension, (col) => _values[row][col],
+            growable: false),
+        growable: false);
+  }
 
   //#endregion
 

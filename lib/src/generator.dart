@@ -137,9 +137,10 @@ typedef GeneratorProgress = void Function({int current, int total});
     }
   }
   // NOTE: For the read-only positions of the generated board to be properly
-  //       initialized, a clone of it is returned. During the construction of
-  //       the clone, the read-only positions are initialized.
-  return (Board.clone(genBoard), null);
+  //       initialized, a new board is created from the values of the generated
+  //       board. The construction of the list from its list of values, derives
+  //       the read-only positions from the non-zero values.
+  return (Board.withValues(genBoard.values), null);
 }
 
 /// Generates a vector with candidate values for a board position in a random

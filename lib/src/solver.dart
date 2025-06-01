@@ -58,7 +58,7 @@ void _findSolutions(
   }
 
   if (tracker != null && tracker.timedout) {
-    throw ("Operation timedout");
+    throw ("Operation timed out");
   }
 
   var blanks = board.blankPositions;

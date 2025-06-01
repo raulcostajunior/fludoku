@@ -2,7 +2,7 @@ import 'package:fludoku/fludoku.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final invalidBoardValueRange = Board.from([
+  final invalidBoardValueRange = Board.withValues([
     [2, 19, 5, 7, 4, 3, 8, 6, 1],
     [4, 3, 1, 8, 6, 5, 9, 2, 7],
     [8, 7, 6, 1, 9, 2, 5, 4, 3],
@@ -14,7 +14,7 @@ void main() {
     [1, 5, 4, 9, 3, 8, 6, 7, 2],
   ]);
 
-  final invalidBoardColumnLine = Board.from([
+  final invalidBoardColumnLine = Board.withValues([
     [5, 1, 6, 8, 4, 9, 7, 3, 2], // 2 is repeated in the fourth column.
     [3, 2, 7, 6, 1, 5, 4, 8, 9], // 3 is repeated in the fourth column.
     [8, 4, 9, 7, 2, 3, 1, 6, 5], // 9 is repeated in the fifth column.
@@ -26,7 +26,7 @@ void main() {
     [7, 9, 1, 3, 5, 4, 6, 2, 8],
   ]);
 
-  final invalidBoardSection = Board.from([
+  final invalidBoardSection = Board.withValues([
     [2, 9, 5, 7, 4, 3, 8, 6, 1], // 2 repeated in first section and 2nd. column.
     [4, 2, 1, 8, 6, 5, 9, 3, 7], // 3 repeated in third section and 8th. column.
     [8, 7, 6, 1, 9, 2, 5, 4, 3],
@@ -38,7 +38,7 @@ void main() {
     [1, 5, 4, 9, 3, 8, 6, 7, 2],
   ]);
 
-  final boardWithBlanks = Board.from([
+  final boardWithBlanks = Board.withValues([
     [2, 9, 5, 7, 0, 3, 8, 6, 1], // a blank in the fifth column of first row
     [4, 3, 1, 8, 6, 5, 9, 2, 7],
     [8, 7, 6, 1, 9, 2, 5, 4, 3],
@@ -50,7 +50,7 @@ void main() {
     [1, 0, 4, 9, 3, 8, 6, 7, 2], // a blank in the second column of last row
   ]);
 
-  final solvedBoard = Board.from([
+  final solvedBoard = Board.withValues([
     [2, 9, 5, 7, 4, 3, 8, 6, 1],
     [4, 3, 1, 8, 6, 5, 9, 2, 7],
     [8, 7, 6, 1, 9, 2, 5, 4, 3],
@@ -177,6 +177,23 @@ void main() {
           throwsA(isA<ArgumentError>()));
       // Attempt again, without throwing an exception.
       expect(board.trySetAt(row: 0, col: 0, value: 6), false);
+    });
+
+    test("Board created from values of another has its own readOnlyPositions",
+        () {
+      // boardWithBlanks has only 2 positions with zero values (writable positions)
+      var board = Board.clone(boardWithBlanks);
+      // Position (0,4) of the board is defined as a zero value and thus writable.
+      board.setAt(row: 0, col: 4, value: 4);
+      // The number of read-only positions of the board is still the same
+      expect(board.readOnlyPositions.length, 79);
+      var boardFromValues = Board.withValues(board.values);
+      // The number of read-only positions of the board created from the values
+      // of the first is not the same.
+      expect(boardFromValues.readOnlyPositions.length, 80);
+      // Differently, a clone retains the read-only positions of the original
+      var boardClone = Board.clone(board);
+      expect(boardClone.readOnlyPositions.length, 79);
     });
 
     test("Properly set value is accepted", () {
