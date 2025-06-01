@@ -185,7 +185,7 @@ void main() {
       var board = Board.clone(boardWithBlanks);
       // Position (0,4) of the board is defined as a zero value and thus writable.
       board.setAt(row: 0, col: 4, value: 4);
-      // The number of read-only positions of the board is still the same
+      // setAt doesn't affect readOnlyPositions
       expect(board.readOnlyPositions.length, 79);
       var boardFromValues = Board.withValues(board.values);
       // The number of read-only positions of the board created from the values
