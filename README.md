@@ -1,5 +1,5 @@
 Dart package for generating and solving Sudoku puzzles - Sudoku boards that have
-only one solutions.
+only one solution.
 
 Boards with dimensions 4, 9, 16 and 25 are supported. The dimensions are the
 number of positions on each group of the board.
@@ -10,9 +10,9 @@ The most usual (and default) dimension, 9, generates boards composed of 9
 Similarly, boards with dimension 16 will be composed of 16 4x4 groups. Each
 group has 16 positions to be filled by numbers from 1 to 16.
 
-The generation of Sudoku puzzles of dimensions 16 and 25, specially when
-`PuzzleDifficulty` is set to `medium` or `high`, can be a lenghty process, taking
-several minutes (or even hours). A timeout argument, in seconds, can be thus
+The generation of Sudoku puzzles of dimensions 16 and 25, especially when
+`PuzzleDifficulty` is set to `medium` or `high`, and can be a lengthy process, taking
+several minutes (or even hours). A timeout argument, in seconds, can be 
 specified to the `generateSudokuPuzzle` function. The default timeout is 15 seconds.
 
 ## Tests
@@ -23,7 +23,7 @@ Use either `dart test` or `flutter test` to run the tests.
 
 ## Example
 
-An usage example for the package:
+A usage example for the package:
 
 ```dart
 
@@ -43,14 +43,14 @@ void main() {
   print('board:\n$board\n');
 
   final (smallPuzzle, _) =
-      generateBoard(level: PuzzleDifficulty.hard, dimension: 4);
+      generateSudokuPuzzle(level: PuzzleDifficulty.hard, dimension: 4);
   if (smallPuzzle != null) {
     print("Small puzzle:\n$smallPuzzle\n");
     var smallPuzzleSolution = findSolutions(smallPuzzle);
     print("Small puzzle solution:\n$smallPuzzleSolution\n");
   }
 
-  final (puzzle, _) = generateBoard(level: PuzzleDifficulty.hard, dimension: 9);
+  final (puzzle, _) = generateSudokuPuzzle(level: PuzzleDifficulty.hard, dimension: 9);
   if (puzzle != null) {
     print("Puzzle:\n$puzzle\n");
     var puzzleSolution = findSolutions(puzzle);
@@ -58,7 +58,7 @@ void main() {
   }
 
   final (bigPuzzle, _) =
-      generateBoard(level: PuzzleDifficulty.medium, dimension: 16);
+      generateSudokuPuzzle(level: PuzzleDifficulty.medium, dimension: 16);
   if (bigPuzzle != null) {
     print("Big puzzle:\n$bigPuzzle\n");
     var bigPuzzleSolution = findSolutions(bigPuzzle);
