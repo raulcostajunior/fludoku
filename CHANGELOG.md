@@ -1,3 +1,7 @@
+## 4.0.1
+
+- Fix wrong `TimeoutException` specification on `throw`.
+
 ## 4.0.0
 
 - `Board.from` constructor renamed to `Board.withValues`.

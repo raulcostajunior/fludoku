@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'board.dart';
 import 'timeout_tracker.dart';
 
@@ -58,7 +59,7 @@ void _findSolutions(
   }
 
   if (tracker != null && tracker.timedout) {
-    throw ("Operation timed out");
+    throw TimeoutException("Operation timed out");
   }
 
   var blanks = board.blankPositions;
