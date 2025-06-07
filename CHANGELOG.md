@@ -1,4 +1,4 @@
-## 4.0.2
+## 4.0.3
 
 - `TimeoutTracker` was not being properly exposed in the package interface.
 - Fix the terminology in the documentation for the `findSolutions` function - `board` and
