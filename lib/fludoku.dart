@@ -5,3 +5,4 @@ export 'src/board.dart' show Board;
 export 'src/generator.dart'
     show generateSudokuPuzzle, GeneratorProgress, PuzzleDifficulty;
 export 'src/solver.dart' show findSolutions, FindSolutionsProgress;
+export 'src/timeout_tracker.dart' show TimeoutTracker;

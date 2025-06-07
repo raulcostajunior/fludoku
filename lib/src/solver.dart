@@ -6,20 +6,20 @@ import 'timeout_tracker.dart';
 /// [progress] is expected to be an integer between 0 and 100.
 typedef FindSolutionsProgress = void Function(int progress);
 
-/// Finds solution(s) for a given [puzzle] board within [timeoutMillis]
-/// interval that defaults to one day.
+/// Finds up to [maxSolutions] solution(s) for a given [board]. The search can
+/// be time limited if a [tracker] is defined by the caller.
 ///
 /// If defined, [progressCallback] will be called to report progress.
-/// As [puzzle] is not guaranteed to be a "canonical" Sudoku board, which must
-/// have only one solution, a [maxSolutions] maximum number of solutions to be
+/// As [board] is not guaranteed to be a Sudoku puzzle, which, by definition,
+/// has only one solution, the [maxSolutions] maximum number of solutions to be
 /// found can be specified.
 ///
-/// If [puzzle] is not a solvable board, an [ArgumentError] is thrown. If
+/// If [board] is not a solvable board, an [ArgumentError] is thrown. If
 /// [maxSolutions] is less than 1, an [ArgumentError] is thrown.
 ///
 /// If a timeout [tracker] is provided, a [TimeoutException] is thrown when the
-/// timeout for the operation to complete elapses before the solutions are found
-List<Board> findSolutions(final Board puzzle,
+/// timeout for the operation to complete elapses before the solutions are found.
+List<Board> findSolutions(final Board board,
     {final FindSolutionsProgress? progressCallback,
     final int maxSolutions = 1,
     final TimeoutTracker? tracker}) {
@@ -27,7 +27,7 @@ List<Board> findSolutions(final Board puzzle,
   if (maxSolutions < 1) {
     throw ArgumentError('maxSolutions must be at least 1');
   }
-  _checkSolvable(puzzle);
+  _checkSolvable(board);
 
   // Initialize progress reporting
   if (progressCallback != null) {
@@ -35,7 +35,7 @@ List<Board> findSolutions(final Board puzzle,
   }
 
   var solutions = <Board>[];
-  _findSolutions(puzzle, progressCallback, maxSolutions, solutions, tracker);
+  _findSolutions(board, progressCallback, maxSolutions, solutions, tracker);
 
   return solutions;
 }
