@@ -47,10 +47,10 @@ typedef GeneratorProgress = void Function({int current, int total});
 (Board?, String?) generateSudokuPuzzle(
     {PuzzleDifficulty level = PuzzleDifficulty.medium,
     int dimension = 9,
-    int timeoutSecs = 15,
+    int timeoutSecs = -1,
     GeneratorProgress? onProgress}) {
   assert(Board.allowedDimensions.contains(dimension));
-  final tracker = TimeoutTracker(timeoutSecs * 1000);
+  final tracker = timeoutSecs > 0 ? TimeoutTracker(timeoutSecs * 1000) : null;
   final timeoutMsg =
       "Board generation timed out. Limit of $timeoutSecs secs reached";
   // The last step, reduction of empty positions to guarantee single solution,
@@ -60,7 +60,7 @@ typedef GeneratorProgress = void Function({int current, int total});
   var currentStep = 1;
   onProgress?.call(current: currentStep, total: totalSteps);
   final candidatesVector = _genCandidatesVector(dimension);
-  if (tracker.timedout) {
+  if (tracker != null && tracker.timedout) {
     return (null, timeoutMsg);
   }
   // Step 2 -> seeds a valid random board by initializing a random position with
@@ -104,7 +104,7 @@ typedef GeneratorProgress = void Function({int current, int total});
     emptyPositions
         .add((row: rnd.nextInt(dimension), col: rnd.nextInt(dimension)));
   }
-  if (tracker.timedout) {
+  if (tracker != null && tracker.timedout) {
     return (null, timeoutMsg);
   }
   for (final emptyPos in emptyPositions) {
@@ -117,7 +117,7 @@ typedef GeneratorProgress = void Function({int current, int total});
   // The positions will be optimally set to reduce the board solution set as
   // fast as possible.
   while (true) {
-    if (tracker.timedout) {
+    if (tracker != null && tracker.timedout) {
       return (null, timeoutMsg);
     }
     try {
@@ -162,7 +162,7 @@ List<int> _genCandidatesVector([int dimension = 9]) {
 }
 
 (Board? solution, bool timedOut) _findStartingSolution(final Board puzzle,
-    List<int> candidatesVector, final TimeoutTracker tracker) {
+    List<int> candidatesVector, final TimeoutTracker? tracker) {
   assert(candidatesVector.length == puzzle.dimension);
   assert(candidatesVector.toSet().length == puzzle.dimension);
   assert(candidatesVector
@@ -174,7 +174,7 @@ List<int> _genCandidatesVector([int dimension = 9]) {
       Board.clone(puzzle); // puzzle is the starting poin for the solvedBoard
   int currCellPos = 0;
   while (currCellPos < blanks.length) {
-    if (tracker.timedout) {
+    if (tracker != null && tracker.timedout) {
       return (null, true);
     }
     var currCell = blanks[currCellPos];
