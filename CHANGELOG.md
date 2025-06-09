@@ -1,3 +1,7 @@
+## 4.0.4
+
+- Add support for infinite timeouts in `generateSudokuPuzzle`. Infinite timeout is the new default (before it was 15 seconds).
+
 ## 4.0.3
 
 - `TimeoutTracker` was not being properly exposed in the package interface.
