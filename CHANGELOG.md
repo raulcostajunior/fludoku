@@ -1,3 +1,7 @@
+## 4.0.5
+
+- Update `README.md`: fix wrong information about default value for board generation timeout. Add reference to `fludoku_demo`.
+
 ## 4.0.4
 
 - Add support for infinite timeouts in `generateSudokuPuzzle`. Infinite timeout is the new default (before it was 15 seconds).

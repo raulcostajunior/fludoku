@@ -11,9 +11,11 @@ Similarly, boards with dimension 16 will be composed of 16 4x4 groups. Each
 group has 16 positions to be filled by numbers from 1 to 16.
 
 The generation of Sudoku puzzles of dimensions 16 and 25, especially when
-`PuzzleDifficulty` is set to `medium` or `high`, and can be a lengthy process, taking
-several minutes (or even hours). A timeout argument, in seconds, can be 
-specified to the `generateSudokuPuzzle` function. The default timeout is 15 seconds.
+`PuzzleDifficulty` is set to `medium` or `high`, can be a lengthy process, taking
+several minutes (or even hours). A timeout argument, in seconds, can be
+specified to the `generateSudokuPuzzle` function. The default timeout is `infinite` (no timeout). Internally, any negative value for the timeout is interpreted as `infinite`.
+
+A Flutter application demoing some non-obvious aspects of using the `Fludoku` package can be found in the [fludoku_demo](https://github.com/raulcostajunior/fludoku_demo) public Github repository.
 
 ## Tests
 
@@ -196,7 +198,5 @@ Big puzzle solution:
  4 16  5  2    7  6  8 15   10  1 12  9   13  3 11 14
 ]
 
-
-fludoku on  main [!+⇡] is 󰏗 v1.0.0 via  v3.5.3 took 13s
 ❯
 ```
