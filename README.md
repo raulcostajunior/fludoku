@@ -1,3 +1,7 @@
+# fludoku
+
+[![Unit Tests Status](https://github.com/raulcostajunior/fludoku/actions/workflows/ci.yml/badge.svg)](https://github.com/raulcostajunior/fludoku/actions/workflows/ci.yml)
+
 Dart package for generating and solving Sudoku puzzles - Sudoku boards that have
 only one solution.
 
