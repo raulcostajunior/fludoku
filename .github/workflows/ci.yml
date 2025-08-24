@@ -1,0 +1,23 @@
+name: Fludoku_CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  unit_tests:
+    name: Run Unit TEsts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+      - run: flutter pub get
+      - run: flutter --version
+      - run: flutter analyze
+      - run: flutter test
