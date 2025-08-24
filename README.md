@@ -1,19 +1,12 @@
 Dart package for generating and solving Sudoku puzzles - Sudoku boards that have
 only one solution.
 
-Boards with dimensions 4, 9, 16 and 25 are supported. The dimensions are the
-number of positions on each group of the board.
-
-The most usual (and default) dimension, 9, generates boards composed of 9
-3x3 groups. Each group will have 9 positions fillable with numbers from 1 to 9.
-
-Similarly, boards with dimension 16 will be composed of 16 4x4 groups. Each
-group has 16 positions to be filled by numbers from 1 to 16.
+Boards with dimensions 4, 9, 16 and 25 are supported. The most usual (and default) dimension is 9, generating puzzles with 9 rows and columns whose positions must be filled with
+numbers from 1 to 9.
 
 The generation of Sudoku puzzles of dimensions 16 and 25, especially when
-`PuzzleDifficulty` is set to `medium` or `high`, can be a lengthy process, taking
-several minutes (or even hours). A timeout argument, in seconds, can be
-specified to the `generateSudokuPuzzle` function. The default timeout is `infinite` (no timeout). Internally, any negative value for the timeout is interpreted as `infinite`.
+`PuzzleDifficulty` is set to `medium` or `high`, can be a lengthy process, sometimes taking
+several minutes. A timeout argument, in seconds, can be specified to the `generateSudokuPuzzle` function. The default timeout is `infinite`. Internally, any negative value for the timeout is interpreted as `infinite`.
 
 A Flutter application demoing some non-obvious aspects of using the `Fludoku` package can be found in the [fludoku_demo](https://github.com/raulcostajunior/fludoku_demo) public Github repository.
 
