@@ -8,7 +8,7 @@ only one solution.
 Boards with dimensions 4, 9, 16 and 25 are supported. The most usual (and default) dimension is 9.
 
 The generation of Sudoku puzzles of dimensions 16 and 25, especially when
-`PuzzleDifficulty` is set to `medium` or `high`, can be a lengthy process, usually taking
+`PuzzleDifficulty` is set to `medium` or `hard`, can be a lengthy process, usually taking
 several minutes. A timeout argument, in seconds, can be passed to the `generateSudokuPuzzle` function. The default timeout is `infinite`. Internally, any negative value for the timeout is interpreted as `infinite`.
 
 A Flutter application demoing some non-obvious aspects of using the `Fludoku` package can be found in the [fludoku_demo](https://github.com/raulcostajunior/fludoku_demo) public Github repository.
